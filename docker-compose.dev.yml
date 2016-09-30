@@ -1,0 +1,32 @@
+---
+version: '2'
+
+services:
+  web:
+    build: .
+    command: bundle exec shotgun janna.rb --host 0.0.0.0 -p 4567
+    volumes:
+      - '.:/usr/src'
+      - 'data:/data'
+    ports:
+      - '4567:4567'
+    dns: 10.0.0.10
+    depends_on:
+      - 'redis'
+
+  redis:
+    image: redis:3.2-alpine
+    ports:
+      - '6379:6379'
+
+  worker:
+    build: .
+    command: bundle exec sidekiq -r ./janna.rb
+    volumes:
+      - '.:/usr/src'
+      - 'data:/data'
+    depends_on:
+      - 'redis'
+
+volumes:
+  data:
