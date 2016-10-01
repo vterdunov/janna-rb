@@ -1,4 +1,5 @@
 .git
 .dockerignore
+.editorconfig
 /log/*
 /tmp/*

@@ -3,13 +3,12 @@ SHELL:=/bin/bash
 build:
 	docker-compose -f docker-compose.dev.yml up --build
 
-run:
+start:
 	docker-compose -f docker-compose.dev.yml up
 
 shell:
-	docker-compose -f docker-compose.dev.yml exec web /bin/sh
+	docker-compose -f docker-compose.dev.yml exec $(filter-out $@,$(MAKECMDGOALS)) /bin/sh
 	sudo chown -R $(shell whoami):$(shell whoami) ./
-
 
 test:
 	@clear
