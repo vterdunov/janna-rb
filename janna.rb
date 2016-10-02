@@ -20,7 +20,7 @@ configure do
 end
 
 post '/vm' do
-  create_vm params[:address]
+  VirtualMachineCook.new(params[:address]).create_vm
 end
 
 get '/' do
@@ -31,25 +31,34 @@ get '/health' do
   200
 end
 
-def create_vm(url)
-  ovafile = download_ova url
-  prepare_ova ovafile
-end
+class VirtualMachineCook
+  def initialize(url)
+    @url = url
+  end
 
-def download_ova(url)
-  DownloadWorker.perform_async url
-  DownloadWorker.filename url
-end
+  def create_vm
+    download_ova
+  end
 
-def prepare_ova(ovafile)
-  ova_path = "/data/#{ovafile}"
-  begin
-    dir = Dir.mktmpdir('janna-', '/tmp')
-    Extracter.new(ova_path, dir)
-    if File.readable?(ova_path) && File.exist?(ova_path)
-      puts 'YES'*50
-    else
-      puts 'NO'*50
+  def download_ova
+    download_jid = DownloadWorker.perform_async(@url)
+    DownloadWorker.filename(@url)
+    download_jid
+  end
+
+  def prepare_ova(ovafile)
+    ova_path = "/data/#{ovafile}"
+    begin
+      dir = Dir.mktmpdir('janna-', '/tmp')
+      Extracter.new(ova_path, dir)
+      sleep 2
+      if File.readable?(ova_path) && File.exist?(ova_path)
+        puts 'YES'*50
+        File.delete(ova_path)
+        200
+      else
+        puts 'NO'*50
+      end
     end
   end
 end

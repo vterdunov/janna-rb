@@ -1,13 +1,15 @@
 class DownloadWorker
   include Sidekiq::Worker
+  sidekiq_options retry: false
 
   def perform(url)
-    download_ova url
+    @url = url
+    download_ova_job(@url)
   end
 
-  def download_ova(url)
+  def download_ova_job(url)
     uri = URI(url)
-    file_name = File.basename(uri.path)
+    file_name = filename
     Net::HTTP.start(uri.host, uri.port) do |http|
       request = Net::HTTP::Get.new uri
       http.request request do |response|
@@ -24,6 +26,17 @@ class DownloadWorker
 
   def self.filename(url)
     uri = URI(url)
+    File.basename(uri.path)
+  end
+
+  private
+
+  def notify
+    VirtualMachineCook.prepare_ova(filename)
+  end
+
+  def filename
+    uri = URI(@url)
     File.basename(uri.path)
   end
 end
