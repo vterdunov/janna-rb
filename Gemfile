@@ -3,6 +3,7 @@ source 'https://rubygems.org'
 gem 'bundler'
 gem 'sinatra'
 gem 'sidekiq'
+gem 'extracter'
 
 group :development do
   gem 'shotgun'

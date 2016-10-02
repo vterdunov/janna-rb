@@ -7,7 +7,7 @@ class DownloadWorker
 
   def download_ova(url)
     uri = URI(url)
-    file_name = filename url
+    file_name = File.basename(uri.path)
     Net::HTTP.start(uri.host, uri.port) do |http|
       request = Net::HTTP::Get.new uri
       http.request request do |response|

@@ -2,7 +2,9 @@ require 'sinatra'
 require 'uri'
 require 'sidekiq'
 require 'redis'
+require 'extracter'
 require_relative 'worker'
+require 'tmpdir'
 
 configure do
   set :bind, '0.0.0.0'
@@ -22,7 +24,7 @@ post '/vm' do
 end
 
 get '/' do
-  'Hello world!'
+  'Janna'
 end
 
 get '/health' do
@@ -40,5 +42,14 @@ def download_ova(url)
 end
 
 def prepare_ova(ovafile)
-  puts "OVAFILE IS: #{ovafile}"
+  ova_path = "/data/#{ovafile}"
+  begin
+    dir = Dir.mktmpdir('janna-', '/tmp')
+    Extracter.new(ova_path, dir)
+    if File.readable?(ova_path) && File.exist?(ova_path)
+      puts 'YES'*50
+    else
+      puts 'NO'*50
+    end
+  end
 end
