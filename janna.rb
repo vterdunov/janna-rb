@@ -30,6 +30,15 @@ get '/health' do
 end
 
 def create_vm(url)
-  # download_ova url
+  ovafile = download_ova url
+  prepare_ova ovafile
+end
+
+def download_ova(url)
   DownloadWorker.perform_async url
+  DownloadWorker.filename url
+end
+
+def prepare_ova(ovafile)
+  puts "OVAFILE IS: #{ovafile}"
 end
