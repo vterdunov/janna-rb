@@ -1,15 +1,21 @@
 require File.expand_path '../spec_helper.rb', __FILE__
 
-describe "Janna application" do
-  it 'should allow accessing the home page' do
-    get '/'
+describe 'GET /' do
+  context 'when try to accessing the home page' do
+    it 'return 200' do
+      get '/'
 
-    expect(last_response).to be_ok
+      expect(last_response).to be_ok
+    end
   end
+end
 
-  it 'should be ok on health check' do
-    get '/health'
+describe 'GET /health' do
+  context 'when get healthcheck' do
+    it 'return 200' do
+      get '/health'
 
-    expect(last_response).to be_ok
+      expect(last_response).to be_ok
+    end
   end
 end

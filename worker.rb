@@ -1,10 +1,15 @@
 class DownloadWorker
   include Sidekiq::Worker
+  include Sidekiq::Status::Worker
   sidekiq_options retry: false
 
   def perform(url)
     @url = url
+    total 100
+    at 5, 'AT 5----------'
+    store vino: 'veritas'
     download_ova_job(@url)
+    vino = retrieve :vino
   end
 
   def download_ova_job(url)

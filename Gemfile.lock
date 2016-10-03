@@ -1,24 +1,10 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    alias_e (0.0.7)
-    cliner (1.0.19)
-    colour_e (0.0.4)
-      alias_e
-      colours
-    colours (0.0.61)
-      cliner
     concurrent-ruby (1.0.2)
     connection_pool (2.2.0)
     diff-lcs (1.2.5)
     dotenv (2.1.1)
-    esystem (0.0.7)
-    extracter (1.0.47)
-      colour_e
-      esystem
-      opn
-      remove_file_suffix
-    opn (1.0.25)
     puma (3.6.0)
     rack (1.6.4)
     rack-protection (1.5.3)
@@ -26,7 +12,6 @@ GEM
     rack-test (0.6.3)
       rack (>= 1.0)
     redis (3.3.1)
-    remove_file_suffix (1.0.4)
     rspec (3.5.0)
       rspec-core (~> 3.5.0)
       rspec-expectations (~> 3.5.0)
@@ -47,6 +32,8 @@ GEM
       connection_pool (~> 2.2, >= 2.2.0)
       rack-protection (~> 1.5)
       redis (~> 3.2, >= 3.2.1)
+    sidekiq-status (0.6.0)
+      sidekiq (>= 2.7)
     sinatra (1.4.7)
       rack (~> 1.5)
       rack-protection (~> 1.4)
@@ -60,12 +47,12 @@ PLATFORMS
 DEPENDENCIES
   bundler
   dotenv (~> 2.0)
-  extracter
   puma
   rack-test
   rspec
   shotgun
   sidekiq
+  sidekiq-status
   sinatra
   sqlite3
 
