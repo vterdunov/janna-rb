@@ -3,8 +3,8 @@ require 'uri'
 require 'sidekiq'
 require 'sidekiq-status'
 require 'redis'
-require_relative 'worker'
 require 'tmpdir'
+Dir['./workers/*.rb'].each { |file| require_relative file }
 
 configure do
   set :bind, '0.0.0.0'
@@ -29,7 +29,8 @@ configure do
 end
 
 post '/vm' do
-  VirtualMachineCook.new(params[:address]).create_vm
+  vm = VirtualMachineCook.new(params[:address])
+  vm.create_vm
 end
 
 get '/' do
@@ -41,36 +42,25 @@ get '/health' do
 end
 
 class VirtualMachineCook
+  attr_reader :jid
+
   def initialize(url)
     @url = url
+    @jid = nil
   end
 
   def create_vm
     download_ova
+    prepare_ova @jid
   end
 
   def download_ova
-    download_jid = DownloadWorker.perform_async(@url)
-    DownloadWorker.filename(@url)
-    data = Sidekiq::Status::get_all download_jid
-    puts download_jid
-    puts data
-    puts Sidekiq::Status::message download_jid
+    jid = DownloadWorker.perform_async @url
+    DownloadWorker.filename @url
+    @jid = jid
   end
 
-  def prepare_ova(ovafile)
-    ova_path = "/data/#{ovafile}"
-    begin
-      dir = Dir.mktmpdir('janna-', '/tmp')
-      `tar xf ova_path -C dir`
-      sleep 2
-      if File.readable?(ova_path) && File.exist?(ova_path)
-        puts 'YES'*50
-        File.delete(ova_path)
-        200
-      else
-        puts 'NO'*50
-      end
-    end
+  def prepare_ova(jid)
+    PrepareWorker.perform_async jid
   end
 end

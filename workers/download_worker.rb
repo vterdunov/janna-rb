@@ -5,11 +5,8 @@ class DownloadWorker
 
   def perform(url)
     @url = url
-    total 100
-    at 5, 'AT 5----------'
-    store vino: 'veritas'
-    download_ova_job(@url)
-    vino = retrieve :vino
+    file_name = download_ova_job @url
+    store filename: file_name
   end
 
   def download_ova_job(url)
@@ -25,6 +22,7 @@ class DownloadWorker
         end
       end
     end
+    file_name.to_s
   rescue
     'Unexpected error'
   end
@@ -35,10 +33,6 @@ class DownloadWorker
   end
 
   private
-
-  def notify
-    VirtualMachineCook.prepare_ova(filename)
-  end
 
   def filename
     uri = URI(@url)
