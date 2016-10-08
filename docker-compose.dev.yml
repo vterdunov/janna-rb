@@ -2,6 +2,11 @@
 version: '2'
 
 services:
+  redis:
+    image: redis:3.2-alpine
+    ports:
+      - '6379:6379'
+
   web:
     build: .
     command: bundle exec shotgun janna.rb --host 0.0.0.0 -p 4567
@@ -10,14 +15,11 @@ services:
       - 'data:/data'
     ports:
       - '4567:4567'
+    environment:
+      RACK_ENV: development
     dns: 10.0.0.10
     depends_on:
       - 'redis'
-
-  redis:
-    image: redis:3.2-alpine
-    ports:
-      - '6379:6379'
 
   worker:
     build: .
@@ -25,6 +27,8 @@ services:
     volumes:
       - '.:/usr/src'
       - 'data:/data'
+    environment:
+      RACK_ENV: development
     depends_on:
       - 'redis'
 
