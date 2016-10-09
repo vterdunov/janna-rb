@@ -34,6 +34,7 @@ post '/vm' do
 end
 
 get '/' do
+  logger.info("loading data")
   'Janna'
 end
 
@@ -50,13 +51,15 @@ class VirtualMachineCook
   end
 
   def create_vm
-    download_ova
+    download_ova @url
     prepare_ova @jid
   end
 
-  def download_ova
-    jid = DownloadWorker.perform_async @url
-    DownloadWorker.filename @url
+  private
+
+  def download_ova(url)
+    jid = DownloadWorker.perform_async url
+    DownloadWorker.filename url
     @jid = jid
   end
 

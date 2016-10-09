@@ -29,6 +29,7 @@ services:
       - 'data:/data'
     environment:
       RACK_ENV: development
+    dns: 10.0.0.10
     depends_on:
       - 'redis'
 
