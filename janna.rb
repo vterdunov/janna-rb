@@ -3,26 +3,26 @@ require 'uri'
 require 'sidekiq'
 require 'redis'
 require 'tmpdir'
-require_relative 'download'
-require_relative 'prepare'
-Dir['./workers/*.rb'].each { |file| require_relative file }
+require 'dotenv'
+Dir['./providers/**/*.rb'].each { |file| require_relative file }
 
 configure do
+  Dotenv.load
   set :bind, '0.0.0.0'
-  REDIS = Redis.new(url: 'redis://redis:6379')
+  REDIS = Redis.new(url: ENV['REDIS_URI'])
 
   Sidekiq.configure_server do |config|
-    config.redis = { url: 'redis://redis:6379' }
+    config.redis = { url: ENV['REDIS_URI'] }
   end
 
   Sidekiq.configure_client do |config|
-    config.redis = { url: 'redis://redis:6379' }
+    config.redis = { url: ENV['REDIS_URI'] }
   end
 end
 
+# ----------------------------------------
 post '/vm' do
-  vm = VirtualMachineCook.new(params[:address])
-  vm.create_vm
+  WMWareWorker.perform_async params[:address]
 end
 
 get '/' do
@@ -32,14 +32,4 @@ end
 
 get '/health' do
   200
-end
-
-class VirtualMachineCook
-  def initialize(url)
-    @url = url
-  end
-
-  def create_vm
-    VMWorker.perform_async @url
-  end
 end

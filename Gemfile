@@ -3,13 +3,14 @@ source 'https://rubygems.org'
 gem 'bundler'
 gem 'sinatra'
 gem 'sidekiq'
+gem 'rbvmomi'
+gem 'dotenv'
 
 group :development do
   gem 'shotgun'
 end
 
 group :test, :development do
-  gem 'dotenv', '~> 2.0'
   gem 'sqlite3'
 end
 

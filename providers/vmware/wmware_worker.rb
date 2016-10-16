@@ -1,4 +1,4 @@
-class VMWorker
+class WMWareWorker
   include Sidekiq::Worker
   sidekiq_options retry: false
 
