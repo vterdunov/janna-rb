@@ -1,6 +1,5 @@
 class VMWorker
   include Sidekiq::Worker
-  include Sidekiq::Status::Worker
   sidekiq_options retry: false
 
   def perform(url)
@@ -8,8 +7,7 @@ class VMWorker
   end
 
   def do_work(url)
-    # yield(url) if block_given?
-    ova_path = Download.start url
+    ova_path = Download.new(url).start
     Prepare.new(ova_path).start
   end
 end
