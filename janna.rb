@@ -4,6 +4,8 @@ require 'sidekiq'
 require 'sidekiq-status'
 require 'redis'
 require 'tmpdir'
+require_relative 'dowload'
+require_relative 'prepare'
 Dir['./workers/*.rb'].each { |file| require_relative file }
 
 configure do
@@ -34,7 +36,7 @@ post '/vm' do
 end
 
 get '/' do
-  logger.info("loading data")
+  logger.info('loading data')
   'Janna'
 end
 
@@ -43,27 +45,11 @@ get '/health' do
 end
 
 class VirtualMachineCook
-  attr_reader :jid
-
   def initialize(url)
     @url = url
-    @jid = nil
   end
 
-  def create_vm
-    download_ova @url
-    prepare_ova @jid
-  end
-
-  private
-
-  def download_ova(url)
-    jid = DownloadWorker.perform_async url
-    DownloadWorker.filename url
-    @jid = jid
-  end
-
-  def prepare_ova(jid)
-    PrepareWorker.perform_async jid
+  def create_vm(url)
+    VMWorker.perform_async url
   end
 end

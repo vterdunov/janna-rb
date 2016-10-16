@@ -12,7 +12,7 @@ ARG PACKAGES=' \
     sqlite \
     sqlite-dev'
 
-RUN apk add --update $PACKAGES && \
+RUN apk add --no-cache --update $PACKAGES && \
     rm -rf /var/cache/apk/*
 
 WORKDIR $APP_HOME

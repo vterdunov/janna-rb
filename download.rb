@@ -1,15 +1,12 @@
-class DownloadWorker
-  include Sidekiq::Worker
-  include Sidekiq::Status::Worker
-  sidekiq_options retry: false
+class Download
+  attr_reader :filename
 
-  def perform(url)
+  def initialize(url)
     @url = url
-    ova_path = download_ova_job @url
-    store ova_path: ova_path
+    @filename = nil
   end
 
-  def download_ova_job(url)
+  def start(url)
     uri = URI(url)
     f_name = filename url
     t_dir = mk_tmp_dir
@@ -31,11 +28,6 @@ class DownloadWorker
   rescue StandardError => e
     puts e.message
     puts e.backtrace.inspect
-  end
-
-  def self.filename(url)
-    uri = URI(url)
-    File.basename(uri.path)
   end
 
   private
