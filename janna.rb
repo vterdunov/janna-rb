@@ -4,7 +4,7 @@ require 'sidekiq'
 require 'sidekiq-status'
 require 'redis'
 require 'tmpdir'
-require_relative 'dowload'
+require_relative 'download'
 require_relative 'prepare'
 Dir['./workers/*.rb'].each { |file| require_relative file }
 
@@ -49,7 +49,7 @@ class VirtualMachineCook
     @url = url
   end
 
-  def create_vm(url)
-    VMWorker.perform_async url
+  def create_vm
+    VMWorker.perform_async @url
   end
 end

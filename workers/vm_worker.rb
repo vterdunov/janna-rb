@@ -8,6 +8,8 @@ class VMWorker
   end
 
   def do_work(url)
-    yield(url) if block_given?
+    # yield(url) if block_given?
+    ova_path = Download.start url
+    Prepare.new(ova_path).start
   end
 end

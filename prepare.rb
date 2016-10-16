@@ -3,9 +3,9 @@ class Prepare
     @path = path
   end
 
-  def start(path)
-    unpack_ova path
-    cleanup path
+  def start
+    unpack_ova @path
+    cleanup @path
   rescue
     [500, 'Prepare error']
   end
