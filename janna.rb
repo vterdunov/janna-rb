@@ -4,10 +4,15 @@ require 'sidekiq'
 require 'redis'
 require 'tmpdir'
 require 'dotenv'
+
+Dotenv.load(
+  File.expand_path('../.env.local', __FILE__),
+  File.expand_path("../.env.#{ENV['RACK_ENV']}", __FILE__),
+  File.expand_path('../.env', __FILE__))
+
 Dir['./providers/**/*.rb'].each { |file| require_relative file }
 
 configure do
-  Dotenv.load
   set :bind, '0.0.0.0'
   REDIS = Redis.new(url: ENV['REDIS_URI'])
 
