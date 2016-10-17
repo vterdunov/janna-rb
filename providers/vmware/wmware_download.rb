@@ -1,4 +1,4 @@
-class Download
+class WMwareDownload
   def initialize(url)
     @url = url
   end

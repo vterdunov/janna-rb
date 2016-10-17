@@ -1,4 +1,4 @@
-class Prepare
+class WMwarePrepare
   def initialize(path)
     @path = path
   end

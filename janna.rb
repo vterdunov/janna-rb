@@ -27,7 +27,9 @@ end
 
 # ----------------------------------------
 post '/vm' do
-  WMWareWorker.perform_async params[:address]
+  ova_url = params[:address]
+  vmname = params[:vmname]
+  WMwareWorker.perform_async ova_url, vmname
 end
 
 get '/' do
