@@ -13,9 +13,6 @@ services:
       - '4567:4567'
     environment:
       RACK_ENV: production
-    dns:
-      - 10.0.0.10
-      - 8.8.8.8
     depends_on:
       - 'redis'
 
@@ -26,9 +23,6 @@ services:
       - 'data:/data'
     environment:
       RACK_ENV: production
-    dns:
-      - 10.0.0.10
-      - 8.8.8.8
     depends_on:
       - 'redis'
 
