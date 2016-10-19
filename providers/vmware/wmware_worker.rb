@@ -21,7 +21,7 @@ class WMwareWorker
       debug: false,
       datacenter: ENV['VSPHERE_DC'],
       datastore: ENV['VSPHERE_DATASTORE'],
-      template_name: '',
+      template_name: vmname,
       template_path: ENV['VSPHERE_TEMPLATE_PATH'],
       computer_path: ENV['VSPHERE_COMPUTER_PATH'],
       network: ENV['VSPHERE_NETWORK'],
