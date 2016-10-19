@@ -6,6 +6,7 @@ ENV APP_HOME /usr/src
 ARG PACKAGES=' \
     ruby-dev \
     build-base \
+    curl \
     libxml2-dev \
     libxslt-dev \
     libffi-dev \
