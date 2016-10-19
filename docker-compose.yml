@@ -1,0 +1,36 @@
+---
+version: '2'
+
+services:
+  redis:
+    image: redis:3.2-alpine
+    ports:
+      - '6379:6379'
+
+  web:
+    image: janna:latest
+    ports:
+      - '4567:4567'
+    environment:
+      RACK_ENV: production
+    dns:
+      - 10.0.0.10
+      - 8.8.8.8
+    depends_on:
+      - 'redis'
+
+  worker:
+    image: janna:latest
+    command: bundle exec sidekiq -r ./janna.rb
+    volumes:
+      - 'data:/data'
+    environment:
+      RACK_ENV: production
+    dns:
+      - 10.0.0.10
+      - 8.8.8.8
+    depends_on:
+      - 'redis'
+
+volumes:
+  data:

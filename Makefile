@@ -1,7 +1,7 @@
 SHELL:=/bin/bash
 
 build:
-	docker-compose -f docker-compose.dev.yml build
+	docker build -t janna .
 
 start:
 	docker-compose -f docker-compose.dev.yml up --build
