@@ -8,8 +8,8 @@ class WMwareWorker
 
   def do_work(url, vmname)
     ova_path = WMwareDownload.new(url).start
-    WMwarePrepare.new(ova_path).start
-    ovf_path = ova_path
+    tmp_dir = WMwarePrepare.new(ova_path).start
+    ovf_path = Dir["#{tmp_dir}/**/*.ovf"].first
     opts = {
       host: ENV['VSPHERE_ADDRESS'],
       port: 443,

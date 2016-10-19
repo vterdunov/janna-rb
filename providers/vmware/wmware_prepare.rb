@@ -4,8 +4,9 @@ class WMwarePrepare
   end
 
   def start
-    unpack_ova @path
+    tmp_dir = unpack_ova @path
     cleanup @path
+    tmp_dir
   rescue
     [500, 'Prepare error']
   end
@@ -14,6 +15,7 @@ class WMwarePrepare
     puts "Unpack OVA: #{path}"
     t_dir = Dir.mktmpdir('janna-', '/tmp')
     `tar xf #{path} -C #{t_dir}`
+    t_dir
   end
 
   def cleanup(path)
