@@ -9,8 +9,9 @@ class WMwareDownload
     t_dir = mk_tmp_dir
     ova_path = "#{t_dir}/#{f_name}"
     puts "Start download #{f_name} from #{@url}"
-    raise 'ERROR Temporary directory doesn\'t exist' unless File.exist? t_dir
+    raise FileNotFoundException, 'ERROR Temporary directory doesn\'t exist' unless File.exist? t_dir
     download uri, ova_path
+    raise FileNotFoundException, 'File not downloaded!' unless File.exist? ova_path
     puts "File Downloaded: #{ova_path}"
 
     ova_path
