@@ -1,10 +1,11 @@
 source 'https://rubygems.org'
 
 gem 'bundler'
+gem 'dotenv'
 gem 'sinatra'
 gem 'sidekiq'
 gem 'rbvmomi'
-gem 'dotenv'
+gem 'slack-notifier'
 
 group :development do
   gem 'shotgun'
