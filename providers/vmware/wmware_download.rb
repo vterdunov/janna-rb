@@ -33,7 +33,7 @@ class WMwareDownload
   end
 
   def download(uri, path)
-    Net::HTTP.start(uri.host, uri.port) do |http|
+    Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == 'https') do |http|
       request = Net::HTTP::Get.new uri
       http.request request do |response|
         open path, 'w' do |io|
