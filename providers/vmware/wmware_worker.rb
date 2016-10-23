@@ -5,8 +5,9 @@ class WMwareWorker
   sidekiq_options retry: false
 
   def perform(url, vmname)
+    send_slack_notify "Start deploy VM: `#{vmname}`"
     ip = do_work url, vmname
-    send_slack_notify 'Hello from Janna. IP: #{ip}'
+    send_slack_notify "VM `#{vmname}` have been deployed. IP: #{ip}"
   end
 
   def do_work(url, vmname)
@@ -54,8 +55,9 @@ class WMwareWorker
   def send_slack_notify(msg)
     notifier = Slack::Notifier.new ENV['SLACK_WEBHOOK_URL'],
                                    channel: ENV['SLACK_CHANNEL'],
-                                   username: ENV['SLACK_USERNAME']
+                                   username: ENV['SLACK_USERNAME'],
+                                   icon_url: 'http://vignette1.wikia.nocookie.net/leagueoflegends/images/b/b0/JannaSquare_old2.png'
 
-    notifier.ping msg, icon_url: 'http://vignette1.wikia.nocookie.net/leagueoflegends/images/b/b0/JannaSquare_old2.png'
+    notifier.ping msg
   end
 end

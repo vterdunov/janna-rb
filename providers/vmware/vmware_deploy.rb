@@ -54,7 +54,8 @@ class VMwareDeploy
 
     vm = clone_vm_from_template template
 
-    powerup_vm vm
+    ip = powerup_vm vm
+    ip
   end
 
   private
@@ -80,6 +81,11 @@ class VMwareDeploy
     }
     config = @lease_tool.set_lease_in_vm_config(config, @lease)
     @deployer.linked_clone template, @vm_name, config
+  rescue RbVmomi::VIM::DuplicateName => e
+    puts e.message
+    puts e.backtrace.inspect
+    send_slack_notify "ERROR: VM `#{@vm_name}` already exist!"
+    raise
   end
 
   def powerup_vm(vm)
@@ -95,5 +101,15 @@ class VMwareDeploy
     puts 'Done'
 
     ip
+  end
+
+  # TODO: move to helper method
+  def send_slack_notify(msg)
+    notifier = Slack::Notifier.new ENV['SLACK_WEBHOOK_URL'],
+                                   channel: ENV['SLACK_CHANNEL'],
+                                   username: ENV['SLACK_USERNAME'],
+                                   icon_url: 'http://vignette1.wikia.nocookie.net/leagueoflegends/images/b/b0/JannaSquare_old2.png'
+
+    notifier.ping msg
   end
 end
