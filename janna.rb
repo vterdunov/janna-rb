@@ -1,3 +1,5 @@
+Dir['./providers/**/*.rb'].each { |file| require_relative file }
+
 require 'sinatra'
 require 'uri'
 require 'sidekiq'
@@ -9,8 +11,6 @@ Dotenv.load(
   File.expand_path('../.env.local', __FILE__),
   File.expand_path("../.env.#{ENV['RACK_ENV']}", __FILE__),
   File.expand_path('../.env', __FILE__))
-
-Dir['./providers/**/*.rb'].each { |file| require_relative file }
 
 configure do
   set :bind, '0.0.0.0'

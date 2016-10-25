@@ -9,7 +9,7 @@ services:
 
   web:
     build: .
-    command: bundle exec shotgun janna.rb --host 0.0.0.0 -p 4567
+    command: sleep 1000000
     volumes:
       - '.:/usr/src'
       - 'data:/data'
@@ -23,19 +23,19 @@ services:
     depends_on:
       - 'redis'
 
-  worker:
-    build: .
-    command: bundle exec sidekiq -r ./janna.rb
-    volumes:
-      - '.:/usr/src'
-      - 'data:/data'
-    environment:
-      RACK_ENV: development
-    dns:
-      - 10.0.0.10
-      - 8.8.8.8
-    depends_on:
-      - 'redis'
+  # worker:
+  #   build: .
+  #   command: bundle exec sidekiq -r ./janna.rb
+  #   volumes:
+  #     - '.:/usr/src'
+  #     - 'data:/data'
+  #   environment:
+  #     RACK_ENV: development
+  #   dns:
+  #     - 10.0.0.10
+  #     - 8.8.8.8
+  #   depends_on:
+  #     - 'redis'
 
 volumes:
   data:
