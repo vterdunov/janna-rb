@@ -1,5 +1,5 @@
-# class HealthController < ApplicationController
-#   get '/' do
-#     'Hello HealthController'
-#   end
-# end
+class HealthController < ApplicationController
+  get '/' do
+    200
+  end
+end

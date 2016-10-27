@@ -9,7 +9,7 @@ services:
 
   web:
     build: .
-    command: sleep 1000000
+    command: rackup -s puma --host 0.0.0.0 -p 4567 config.ru
     volumes:
       - '.:/usr/src'
       - 'data:/data'

@@ -1,9 +1,11 @@
-# require 'rubygems'
-# require 'bundler/setup'
 require 'sinatra/base'
+require 'bundler/setup'
 
-Dir.glob('./app/{helpers,controllers}/*.rb').each { |file| require file }
+require './app/helpers/application_helper.rb'
+require './app/controllers/application_controller.rb'
 
-run ApplicationController
-# map('/') { run ApplicationController }
-# map('/test') { run HealthController }
+Dir.glob("#{__dir__}/app/{controllers,helpers}/*.rb").each { |file| require file }
+
+map('/')       { run ApplicationController }
+map('/health') { run HealthController }
+map('/vm')     { run VmCreatorController }
