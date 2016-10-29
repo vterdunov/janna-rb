@@ -1,13 +1,14 @@
 require 'slack-notifier'
+require 'sidekiq'
 
 class WMwareWorker
   include Sidekiq::Worker
   sidekiq_options retry: false
 
   def perform(url, vmname)
-    send_slack_notify "Start deploy VM: `#{vmname}`"
+    # send_slack_notify "Start deploy VM: `#{vmname}`"
     ip = do_work url, vmname
-    send_slack_notify "VM `#{vmname}` have been deployed. IP: #{ip}"
+    # send_slack_notify "VM `#{vmname}` have been deployed. IP: #{ip}"
   end
 
   def do_work(url, vmname)

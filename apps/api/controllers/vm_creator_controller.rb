@@ -1,4 +1,4 @@
-class VmCreatorController < ApplicationController
+class VmCreatorController < Application
   post '/' do
     ova_url = params[:address]
     vmname  = params[:vmname]

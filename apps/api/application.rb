@@ -2,7 +2,9 @@ require 'sinatra/base'
 require 'redis'
 require 'sidekiq'
 
-class ApplicationController < Sinatra::Base
+Dir["#{__dir__}/helpers/*.rb"].each { |file| require_relative file }
+
+class Application < Sinatra::Base
   helpers ApplicationHelper
 
   configure do
@@ -25,3 +27,5 @@ class ApplicationController < Sinatra::Base
     set slack_bot_username: ENV['SLACK_BOT_USERNAME']
   end
 end
+
+Dir["#{__dir__}/controllers/*.rb"].each { |file| require_relative file }

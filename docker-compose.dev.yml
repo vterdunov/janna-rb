@@ -24,7 +24,7 @@ services:
 
   worker:
     build: .
-    command: bundle exec sidekiq -r ./lib/providers/vmware/vmware_worker.rb
+    command: bundle exec sidekiq -r ./config/environment.rb
     volumes:
       - '.:/usr/src'
       - 'data:/data'
