@@ -2,18 +2,19 @@ require 'slack-notifier'
 require 'sidekiq'
 
 class WMwareWorker
+  include ApplicationHelper
   include Sidekiq::Worker
   sidekiq_options retry: false
 
   def perform(url, vmname)
-    # send_slack_notify "Start deploy VM: `#{vmname}`"
+    send_slack_notify "Start deploy VM: `#{vmname}`"
     ip = do_work url, vmname
-    # send_slack_notify "VM `#{vmname}` have been deployed. IP: #{ip}"
+    send_slack_notify "VM `#{vmname}` has been deployed. IP: #{ip}"
   end
 
   def do_work(url, vmname)
     ova_path = WMwareDownload.new(url).start
-    tmp_dir = WMwarePrepare.new(ova_path).start
+    tmp_dir  = WMwarePrepare.new(ova_path).start
     ovf_path = Dir["#{tmp_dir}/**/*.ovf"].first
     opts = {
       host: ENV['VSPHERE_ADDRESS'],
@@ -51,14 +52,5 @@ class WMwareWorker
       rev: '6.0'
     }
     VMwareDeploy.new(ovf_path, vmname, opts).start
-  end
-
-  def send_slack_notify(msg)
-    notifier = Slack::Notifier.new ENV['SLACK_WEBHOOK_URL'],
-                                   channel: ENV['SLACK_CHANNEL'],
-                                   username: ENV['SLACK_USERNAME'],
-                                   icon_url: 'http://vignette1.wikia.nocookie.net/leagueoflegends/images/b/b0/JannaSquare_old2.png'
-
-    notifier.ping msg
   end
 end

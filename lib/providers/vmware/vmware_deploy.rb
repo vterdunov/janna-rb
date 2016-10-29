@@ -5,6 +5,7 @@ require 'rbvmomi/utils/leases'
 require 'yaml'
 
 class VMwareDeploy
+  include ApplicationHelper
   VIM = RbVmomi::VIM
 
   def initialize(ovf_path, vm_name, opts = {})
@@ -84,8 +85,8 @@ class VMwareDeploy
   rescue RbVmomi::VIM::DuplicateName => e
     puts e.message
     puts e.backtrace.inspect
-    send_slack_notify "ERROR: VM `#{@vm_name}` already exist!"
-    raise
+    send_slack_notify "ERROR: VM with name `#{@vm_name}` already exist!"
+    raise StandardError
   end
 
   def powerup_vm(vm)
@@ -101,15 +102,5 @@ class VMwareDeploy
     puts 'Done'
 
     ip
-  end
-
-  # TODO: move to helper method
-  def send_slack_notify(msg)
-    notifier = Slack::Notifier.new ENV['SLACK_WEBHOOK_URL'],
-                                   channel: ENV['SLACK_CHANNEL'],
-                                   username: ENV['SLACK_USERNAME'],
-                                   icon_url: 'http://vignette1.wikia.nocookie.net/leagueoflegends/images/b/b0/JannaSquare_old2.png'
-
-    notifier.ping msg
   end
 end

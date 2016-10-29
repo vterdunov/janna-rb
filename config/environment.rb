@@ -7,9 +7,7 @@ Dotenv.load(
 
 require 'sinatra/base'
 require 'bundler/setup'
-require 'sidekiq'
-require 'redis'
 
-require_relative '../lib/janna'
 require_relative '../apps/api/application'
+require_relative '../lib/janna'
 require_relative './sidekiq'
