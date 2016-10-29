@@ -7,12 +7,11 @@ services:
     ports:
       - '6379:6379'
 
-  web:
+  api:
     build: .
     command: rackup -s puma --host 0.0.0.0 -p 4567 config.ru
     volumes:
       - '.:/usr/src'
-      - 'data:/data'
     ports:
       - '4567:4567'
     environment:
@@ -23,19 +22,20 @@ services:
     depends_on:
       - 'redis'
 
-  # worker:
-  #   build: .
-  #   command: bundle exec sidekiq -r ./janna.rb
-  #   volumes:
-  #     - '.:/usr/src'
-  #     - 'data:/data'
-  #   environment:
-  #     RACK_ENV: development
-  #   dns:
-  #     - 10.0.0.10
-  #     - 8.8.8.8
-  #   depends_on:
-  #     - 'redis'
+  worker:
+    build: .
+    command: bundle exec sidekiq -r ./lib/providers/vmware/vmware_worker.rb
+    volumes:
+      - '.:/usr/src'
+      - 'data:/data'
+    environment:
+      RACK_ENV: development
+    dns:
+      - 10.0.0.10
+      - 8.8.8.8
+    depends_on:
+      - 'redis'
+      - 'api'
 
 volumes:
   data:
