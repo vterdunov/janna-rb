@@ -7,7 +7,7 @@ services:
     ports:
       - '6379:6379'
 
-  web:
+  api:
     image: janna:latest
     ports:
       - '4567:4567'
@@ -18,13 +18,14 @@ services:
 
   worker:
     image: janna:latest
-    command: bundle exec sidekiq -r ./janna.rb
+    command: bundle exec sidekiq -r ./config/environment.rb
     volumes:
       - 'data:/data'
     environment:
       RACK_ENV: production
     depends_on:
       - 'redis'
+      - 'api'
 
 volumes:
   data:

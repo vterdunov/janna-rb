@@ -23,4 +23,4 @@ RUN bundle install --jobs=4
 
 COPY . $APP_HOME
 
-CMD ["bundle", "exec", "ruby", "janna.rb"]
+CMD ["rackup", "-s", "puma", "--host", "0.0.0.0.", "-p", "4567", "config.ru"]
