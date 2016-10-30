@@ -1,7 +1,7 @@
 require 'uri'
 require 'tmpdir'
 
-class WMwareDownload
+class Downloader
   def initialize(url)
     @url = url
   end

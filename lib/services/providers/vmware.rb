@@ -4,8 +4,7 @@ require 'rbvmomi/utils/admission_control'
 require 'rbvmomi/utils/leases'
 require 'yaml'
 
-class VMwareDeploy
-  include ApplicationHelper
+class VMware
   VIM = RbVmomi::VIM
 
   def initialize(ovf_path, vm_name, opts = {})
@@ -17,7 +16,7 @@ class VMwareDeploy
     @template_name = @opts[:template_name]
   end
 
-  def start
+  def deploy
     # config
     vim = VIM.connect @opts
     dc = vim.serviceInstance.find_datacenter(@opts[:datacenter])
@@ -85,8 +84,7 @@ class VMwareDeploy
   rescue RbVmomi::VIM::DuplicateName => e
     puts e.message
     puts e.backtrace.inspect
-    send_slack_notify "ERROR: VM with name `#{@vm_name}` already exist!"
-    raise StandardError
+    raise "ERROR: VM with name `#{@vm_name}` already exist!"
   end
 
   def powerup_vm(vm)

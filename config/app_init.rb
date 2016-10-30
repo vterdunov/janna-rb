@@ -6,4 +6,4 @@ Dotenv.load(
   File.expand_path("#{__dir__}/../.env", __FILE__)
 )
 
-Dir['./initializers'].each { |f| require f }
+Dir["#{$root}/config/initializers/*.rb"].each { |f| require f }

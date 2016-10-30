@@ -1,4 +1,4 @@
-class WMwarePrepare
+class Unpacker
   def initialize(path)
     @path = path
   end

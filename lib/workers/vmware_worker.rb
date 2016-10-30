@@ -1,20 +1,24 @@
-require 'slack-notifier'
-require 'sidekiq'
+require_relative '../services/notifier'
+require_relative '../services/downloader'
+require_relative '../services/unpacker'
+require_relative '../services/providers/vmware'
 
-class WMwareWorker
-  include ApplicationHelper
+class VMwareWorker
   include Sidekiq::Worker
   sidekiq_options retry: false
 
   def perform(url, vmname)
-    send_slack_notify "Start deploy VM: `#{vmname}`"
+    notify = Notifier.new
+    notify.slack "Start deploy VM: `#{vmname}`"
     ip = do_work url, vmname
-    send_slack_notify "VM `#{vmname}` has been deployed. IP: #{ip}"
+    notify.slack "VM `#{vmname}` has been deployed. IP: #{ip}"
+  rescue RuntimeError => error
+    notify.slack(error.message)
   end
 
   def do_work(url, vmname)
-    ova_path = WMwareDownload.new(url).start
-    tmp_dir  = WMwarePrepare.new(ova_path).start
+    ova_path = Downloader.new(url).start
+    tmp_dir  = Unpacker.new(ova_path).tar
     ovf_path = Dir["#{tmp_dir}/**/*.ovf"].first
     opts = {
       host: ENV['VSPHERE_ADDRESS'],
@@ -51,6 +55,6 @@ class WMwareWorker
       ns: 'urn:vim25',
       rev: '6.0'
     }
-    VMwareDeploy.new(ovf_path, vmname, opts).start
+    VMware.new(ovf_path, vmname, opts).deploy
   end
 end

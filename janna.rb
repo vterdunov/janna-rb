@@ -1,6 +1,4 @@
-require_relative 'config/app_init'
-Dir['lib/rest_api/*.rb'].each { |f| require f }
+$root = __dir__
 
-map('/')       { run ApplicationController }
-map('/health') { run HealthController }
-map('/vm')     { run VmCreatorController }
+require_relative 'config/app_init'
+Dir["#{$root}/lib/rest_api/*.rb"].each { |f| require f }
