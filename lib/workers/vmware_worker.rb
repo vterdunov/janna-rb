@@ -12,8 +12,10 @@ class VMwareWorker
     notify.slack "Start deploy VM: `#{vmname}`"
     ip = do_work url, vmname
     notify.slack "VM `#{vmname}` has been deployed. IP: #{ip}"
-  rescue RuntimeError => error
-    notify.slack(error.message)
+  rescue RuntimeError => e
+    $logger.error { e.message }
+    $logger.error { e.backtrace.inspect }
+    notify.slack e.message
   end
 
   def do_work(url, vmname)

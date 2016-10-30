@@ -11,17 +11,17 @@ class Downloader
     f_name = filename @url
     t_dir = mk_tmp_dir
     ova_path = "#{t_dir}/#{f_name}"
-    $logger.debug "Start download #{f_name} from #{@url}"
+    $logger.debug { "Start download file, name=#{f_name}, url=#{@url}" }
     raise FileNotFoundException, 'ERROR Temporary directory doesn\'t exist' unless File.exist? t_dir
     download uri, ova_path
     raise FileNotFoundException, 'File not downloaded!' unless File.exist? ova_path
-    $logger.debug "File Downloaded: #{ova_path}"
+    $logger.debug { "File downloaded, path=#{ova_path}" }
 
     ova_path
   rescue StandardError => e
-    $logger.debug 'ERROR'
-    $logger.debug e.message
-    $logger.debug e.backtrace.inspect
+    $logger.error { e.message }
+    $logger.error { e.backtrace.inspect }
+    raise 'ERROR: Failed download file.'
   end
 
   private

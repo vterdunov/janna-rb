@@ -1,4 +1,5 @@
 require 'sinatra/base'
+require 'redis'
 
 class ApplicationController < Sinatra::Base
   configure do
