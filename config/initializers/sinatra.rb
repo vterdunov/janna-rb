@@ -3,7 +3,6 @@ require 'sinatra/base'
 class ApplicationController < Sinatra::Base
   configure do
     set :bind, '0.0.0.0'
-    enable :logging
     REDIS = Redis.new(url: ENV['REDIS_URI'])
 
     set vsphere_address:        ENV['VSPHERE_ADDRESS']

@@ -12,7 +12,7 @@ class Unpacker
   end
 
   def unpack_ova(path)
-    puts "Unpack OVA: #{path}"
+    $logger.debug { "Unpack OVA: #{path}" }
     t_dir = Dir.mktmpdir('janna-', '/tmp')
     `tar xf #{path} -C #{t_dir}`
     t_dir

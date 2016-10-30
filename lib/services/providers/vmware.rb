@@ -62,7 +62,7 @@ class VMware
 
   def deploy_template(template)
     unless template
-      puts 'Uploading/Preparing OVF template ...'
+      $logger.debug 'Uploading/Preparing OVF template ...'
 
       template = @deployer.upload_ovf_as_template(
         @ovf_path, @template_name,
@@ -74,7 +74,7 @@ class VMware
   end
 
   def clone_vm_from_template(template)
-    puts 'Cloning template ...'
+    $logger.debug 'Cloning template ...'
     config = {
       numCPUs: @opts[:cpus],
       memoryMB: @opts[:memory]
@@ -82,22 +82,22 @@ class VMware
     config = @lease_tool.set_lease_in_vm_config(config, @lease)
     @deployer.linked_clone template, @vm_name, config
   rescue RbVmomi::VIM::DuplicateName => e
-    puts e.message
-    puts e.backtrace.inspect
+    $logger.debug e.message
+    $logger.debug e.backtrace.inspect
     raise "ERROR: VM with name `#{@vm_name}` already exist!"
   end
 
   def powerup_vm(vm)
-    puts 'Powering On VM ...'
+    $logger.debug 'Powering On VM ...'
     vm.PowerOnVM_Task.wait_for_completion
 
-    puts 'Waiting for VM to be up ...'
+    $logger.debug 'Waiting for VM to be up ...'
     until (ip = vm.guest_ip)
       sleep 5
     end
 
-    puts "VM got IP: #{ip}"
-    puts 'Done'
+    $logger.debug "VM got IP: #{ip}"
+    $logger.debug 'Done'
 
     ip
   end

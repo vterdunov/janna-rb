@@ -5,6 +5,8 @@ ENV['RACK_ENV'] = 'test'
 
 require File.expand_path '../../janna.rb', __FILE__
 
+$logger.level = :fatal
+
 module RSpecMixin
   include Rack::Test::Methods
   def app
