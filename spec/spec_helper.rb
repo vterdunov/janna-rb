@@ -8,7 +8,7 @@ require File.expand_path '../../janna.rb', __FILE__
 module RSpecMixin
   include Rack::Test::Methods
   def app
-    Sinatra::Application
+    ApplicationController
   end
 end
 

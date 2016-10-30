@@ -1,7 +1,7 @@
 require_relative '../workers/vmware_worker'
 
-class VmCreatorController < ApplicationController
-  post '/' do
+class ApplicationController
+  post '/vm' do
     ova_url = params[:address]
     vmname  = params[:vmname]
 
