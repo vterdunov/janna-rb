@@ -24,7 +24,7 @@ services:
 
   worker:
     build: .
-    command: bundle exec sidekiq -r ./config/environment.rb
+    command: bundle exec sidekiq -r ./janna.rb
     volumes:
       - '.:/usr/src'
       - 'data:/data'

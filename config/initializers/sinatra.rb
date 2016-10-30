@@ -1,15 +1,8 @@
 require 'sinatra/base'
-require 'redis'
-require 'sidekiq'
 
-Dir["#{__dir__}/helpers/*.rb"].each { |file| require_relative file }
-
-class Application < Sinatra::Base
-  helpers ApplicationHelper
-
+class ApplicationController < Sinatra::Base
   configure do
     set :bind, '0.0.0.0'
-    enable :logging
     REDIS = Redis.new(url: ENV['REDIS_URI'])
 
     set vsphere_address:        ENV['VSPHERE_ADDRESS']
@@ -27,5 +20,3 @@ class Application < Sinatra::Base
     set slack_bot_username: ENV['SLACK_BOT_USERNAME']
   end
 end
-
-Dir["#{__dir__}/controllers/*.rb"].each { |file| require_relative file }

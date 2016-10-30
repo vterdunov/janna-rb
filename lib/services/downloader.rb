@@ -1,7 +1,7 @@
 require 'uri'
 require 'tmpdir'
 
-class WMwareDownload
+class Downloader
   def initialize(url)
     @url = url
   end
@@ -11,17 +11,17 @@ class WMwareDownload
     f_name = filename @url
     t_dir = mk_tmp_dir
     ova_path = "#{t_dir}/#{f_name}"
-    puts "Start download #{f_name} from #{@url}"
+    $logger.debug "Start download #{f_name} from #{@url}"
     raise FileNotFoundException, 'ERROR Temporary directory doesn\'t exist' unless File.exist? t_dir
     download uri, ova_path
     raise FileNotFoundException, 'File not downloaded!' unless File.exist? ova_path
-    puts "File Downloaded: #{ova_path}"
+    $logger.debug "File Downloaded: #{ova_path}"
 
     ova_path
   rescue StandardError => e
-    puts 'ERROR'
-    puts e.message
-    puts e.backtrace.inspect
+    $logger.debug 'ERROR'
+    $logger.debug e.message
+    $logger.debug e.backtrace.inspect
   end
 
   private

@@ -12,11 +12,11 @@ shell:
 
 test:
 	@clear
-	docker-compose -f docker-compose.dev.yml exec web /bin/sh -c 'RACK_ENV=test bundle exec rspec'
+	docker-compose -f docker-compose.dev.yml exec api /bin/sh -c 'RACK_ENV=test bundle exec rspec'
 
 test-no-tty:
 	@clear
-	@docker-compose -f docker-compose.dev.yml exec web /bin/sh -c 'RACK_ENV=test bundle exec rspec'
+	@docker-compose -f docker-compose.dev.yml exec api /bin/sh -c 'RACK_ENV=test bundle exec rspec'
 
 pull:
 	docker-compose -f docker-compose.dev.yml pull
