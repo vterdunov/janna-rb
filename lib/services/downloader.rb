@@ -1,19 +1,28 @@
 require 'uri'
 require 'tmpdir'
 
+# Downloads files into temporary directory
+#
+# @example
+#   # Create instance
+#   file = Downloader.new('https://cloud-images.ubuntu.com/releases/16.04/release/ubuntu-16.04-server-cloudimg-amd64.ova')
+#   # Start download file
+#   file.download
 class Downloader
   def initialize(url)
     @url = url
   end
 
-  def start
+  # Starts download file
+  # @return [String] Path to downloaded file
+  def download
     uri = URI @url
     f_name = filename @url
     t_dir = mk_tmp_dir
     ova_path = "#{t_dir}/#{f_name}"
     $logger.debug { "Start download file, name=#{f_name}, url=#{@url}" }
     raise FileNotFoundException, 'ERROR Temporary directory doesn\'t exist' unless File.exist? t_dir
-    download uri, ova_path
+    download_file uri, ova_path
     raise FileNotFoundException, 'File not downloaded!' unless File.exist? ova_path
     $logger.debug { "File downloaded, path=#{ova_path}" }
 
@@ -26,16 +35,27 @@ class Downloader
 
   private
 
+  # Creates temporary directory in /tmp with `janna-tmp-download-` prefix
+  #
+  # @return [String] Path to temporary directory
   def mk_tmp_dir
     Dir.mktmpdir('janna-tmp-download-', '/tmp')
   end
 
+  # Returns name of file from URL string
+  # @param url [Sting] The URL of the file
+  # @example filname 'https://cloud-images.ubuntu.com/releases/16.04/release/ubuntu-16.04-server-cloudimg-amd64.ova'
+  #
+  # @return [String] Base name of the file: ubuntu-16.04-server-cloudimg-amd64.ova
   def filename(url)
     uri = URI(url)
     File.basename(uri.path)
   end
 
-  def download(uri, path)
+  # Downloads file
+  # @param uri [String] The URL of the file
+  # @param path [String] Filename to save file
+  def download_file(uri, path)
     Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == 'https') do |http|
       request = Net::HTTP::Get.new uri
       http.request request do |response|

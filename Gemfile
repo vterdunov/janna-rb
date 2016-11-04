@@ -9,6 +9,7 @@ gem 'slack-notifier'
 
 group :development do
   gem 'shotgun'
+  gem 'yard'
 end
 
 group :test, :development do

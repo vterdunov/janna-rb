@@ -19,7 +19,7 @@ class VMwareWorker
   end
 
   def do_work(url, vmname)
-    ova_path = Downloader.new(url).start
+    ova_path = Downloader.new(url).download
     tmp_dir  = Unpacker.new(ova_path).tar
     ovf_path = Dir["#{tmp_dir}/**/*.ovf"].first
     opts = {
