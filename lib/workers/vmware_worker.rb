@@ -33,8 +33,6 @@ class VMwareWorker
       debug: false,
       datacenter: ENV['VSPHERE_DC'],
       datastore: ENV['VSPHERE_DATASTORE'],
-      template_name: vmname,
-      template_path: ENV['VSPHERE_TEMPLATE_PATH'],
       computer_path: ENV['VSPHERE_COMPUTER_PATH'],
       network: ENV['VSPHERE_NETWORK'],
       vm_folder_path: ENV['VSPHERE_VM_FOLDER_PATH'],

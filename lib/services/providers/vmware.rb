@@ -1,7 +1,6 @@
 require 'rbvmomi'
 require 'rbvmomi/utils/deploy'
 require 'rbvmomi/utils/admission_control'
-require 'rbvmomi/utils/leases'
 require 'yaml'
 
 class VMware
@@ -17,13 +16,12 @@ class VMware
   end
 
   def deploy
-    # config
+    # get resources
     vim = VIM.connect @opts
     dc = vim.serviceInstance.find_datacenter(@opts[:datacenter])
     root_vm_folder = dc.vmFolder
 
     vm_folder = root_vm_folder.traverse(@opts[:vm_folder_path], VIM::Folder)
-    template_folder = root_vm_folder.traverse!(@template_folder_path, VIM::Folder)
 
     scheduler = AdmissionControlledResourceScheduler.new(
       vim,
@@ -39,61 +37,64 @@ class VMware
 
     datastore = scheduler.datastore
     computer = scheduler.pick_computer
+    rp = computer.resourcePool
+
+    pc = vim.serviceContent.propertyCollector
+    hosts = computer.host
+    hosts_props = pc.collectMultiple(
+      hosts,
+      'datastore', 'runtime.connectionState',
+      'runtime.inMaintenanceMode', 'name'
+    )
+    host = hosts.shuffle.find do |x|
+      host_props = hosts_props[x]
+      is_connected = host_props['runtime.connectionState'] == 'connected'
+      is_ds_accessible = host_props['datastore'].member?(datastore)
+      is_connected && is_ds_accessible && !host_props['runtime.inMaintenanceMode']
+    end
+
+    raise 'No host in the cluster available to upload OVF to' unless host
+
     network = computer.network.find { |x| x.name == @opts[:network] }
 
-    @lease_tool = LeaseTool.new
-    @lease = @opts[:lease] * 24 * 60 * 60
+    ovf = open(@ovf_path, 'r') { |io| Nokogiri::XML(io.read) }
+    ovf.remove_namespaces!
+    networks = ovf.xpath('//NetworkSection/Network').map{ |x| x['name'] }
+    network_mappings = Hash[networks.map{ |x| [x, network] }]
 
-    @deployer = CachedOvfDeployer.new(
-      vim, network, computer, template_folder, vm_folder, datastore
-    )
-    template = @deployer.lookup_template @template_name
+    network_mappings_str = network_mappings.map{ |k, v| "#{k} = #{v.name}" }
+    puts "networks: #{network_mappings_str.join(', ')}"
 
-    # ----------------------------------------
-    template = deploy_template template
+    property_mappings = {}
 
-    vm = clone_vm_from_template template
-
+    # -------------------------------------------------------------------------
+    vm = ovf_deploy(vim, @ovf_path, @vm_name, vm_folder, host, rp, datastore, network_mappings, property_mappings)
     ip = powerup_vm vm
     ip
   end
 
   private
 
-  def deploy_template(template)
-    unless template
-      $logger.info 'Uploading/Preparing OVF template ...'
-
-      template = @deployer.upload_ovf_as_template(
-        @ovf_path, @template_name,
-        run_without_interruptions: true,
-        config: @lease_tool.set_lease_in_vm_config({}, @lease)
-      )
-    end
-    template
-  end
-
-  def clone_vm_from_template(template)
-    $logger.info 'Cloning template ...'
-    config = {
-      numCPUs: @opts[:cpus],
-      memoryMB: @opts[:memory]
-    }
-    config = @lease_tool.set_lease_in_vm_config(config, @lease)
-    @deployer.linked_clone template, @vm_name, config
-  rescue RbVmomi::VIM::DuplicateName => e
-    $logger.error e.message
-    $logger.error e.backtrace.inspect
-    raise "ERROR: VM with name `#{@vm_name}` already exist!"
+  def ovf_deploy(vim, ovf_path, vm_name, vm_folder, host, resource_pool, datastore, network_mappings, property_mappings)
+    vim.serviceContent.ovfManager.deployOVF(
+      uri: ovf_path,
+      vmName: vm_name,
+      vmFolder: vm_folder,
+      host: host,
+      resourcePool: resource_pool,
+      datastore: datastore,
+      networkMappings: network_mappings,
+      propertyMappings: property_mappings
+    )
   end
 
   def powerup_vm(vm)
     $logger.info 'Powering On VM ...'
     vm.PowerOnVM_Task.wait_for_completion
 
-    $logger.info 'Waiting for VM to be up ...'
     until (ip = vm.guest_ip)
       sleep 5
+      $logger.info 'Waiting for VM to be up ...'
     end
 
     $logger.info "VM got IP: #{ip}"
