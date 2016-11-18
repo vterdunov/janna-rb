@@ -1,6 +1,6 @@
 require 'slack-notifier'
 
-# Provides notofications
+# Provides notifications
 class Notifier
   def initialize
     @slack = Slack::Notifier.new ENV['SLACK_WEBHOOK_URL'],

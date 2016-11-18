@@ -10,6 +10,7 @@ gem 'slack-notifier'
 group :development do
   gem 'shotgun'
   gem 'yard'
+  gem 'yard-sinatra'
 end
 
 group :test, :development do

@@ -6,23 +6,36 @@ require 'yaml'
 class VMware
   VIM = RbVmomi::VIM
 
-  def initialize(ovf_path, vm_name, opts = {})
+  def initialize(ovf_path, vm_name, opts)
     @ovf_path = ovf_path
     @vm_name = vm_name
-    @opts = opts
-
-    @template_folder_path = opts[:template_path]
-    @template_name = @opts[:template_name]
+    @opts = {
+      host:     ENV['VSPHERE_ADDRESS'],
+      port:     ENV['VSPHERE_PORT'],
+      user:     ENV['VSPHERE_USERNAME'],
+      password: ENV['VSPHERE_PASSWORD'],
+      insecure: true,
+      path: '/sdk',
+      datacenter:     opts['vsphere_datacenter'] || ENV['VSPHERE_DC'],
+      datastore:      opts['vsphere_datastore']  || ENV['VSPHERE_DATASTORE'],
+      computer_path:  opts['vsphere_cluster']    || ENV['VSPHERE_CLUSTER'],
+      network:        opts['vsphere_network']    || ENV['VSPHERE_NETWORK'],
+      vm_folder_path: opts['vsphere_vm_folder']  || ENV['VSPHERE_VM_FOLDER'],
+      ssl: true,
+      debug: false
+    }
   end
 
   def deploy
     # get resources
+    $logger.debug { 'Get resources from vmware' }
     vim = VIM.connect @opts
     dc = vim.serviceInstance.find_datacenter(@opts[:datacenter])
     root_vm_folder = dc.vmFolder
 
     vm_folder = root_vm_folder.traverse(@opts[:vm_folder_path], VIM::Folder)
 
+    $logger.debug { 'Create scheduler' }
     scheduler = AdmissionControlledResourceScheduler.new(
       vim,
       datacenter: dc,
@@ -40,6 +53,7 @@ class VMware
     rp = computer.resourcePool
 
     pc = vim.serviceContent.propertyCollector
+    $logger.debug { 'Choose computer from cluster' }
     hosts = computer.host
     hosts_props = pc.collectMultiple(
       hosts,
@@ -55,14 +69,15 @@ class VMware
 
     raise 'No host in the cluster available to upload OVF to' unless host
 
+    $logger.debug { 'Get networks' }
     network = computer.network.find { |x| x.name == @opts[:network] }
 
     ovf = open(@ovf_path, 'r') { |io| Nokogiri::XML(io.read) }
     ovf.remove_namespaces!
-    networks = ovf.xpath('//NetworkSection/Network').map{ |x| x['name'] }
-    network_mappings = Hash[networks.map{ |x| [x, network] }]
+    networks = ovf.xpath('//NetworkSection/Network').map { |x| x['name'] }
+    network_mappings = Hash[networks.map { |x| [x, network] }]
 
-    network_mappings_str = network_mappings.map{ |k, v| "#{k} = #{v.name}" }
+    network_mappings_str = network_mappings.map { |k, v| "#{k} = #{v.name}" }
     puts "networks: #{network_mappings_str.join(', ')}"
 
     property_mappings = {}

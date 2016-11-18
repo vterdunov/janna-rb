@@ -5,7 +5,8 @@ require 'tmpdir'
 #
 # @example
 #   # Create instance
-#   file = Downloader.new('https://cloud-images.ubuntu.com/releases/16.04/release/ubuntu-16.04-server-cloudimg-amd64.ova')
+#   file_url = 'https://cloud-images.ubuntu.com/releases/16.04/release/ubuntu-16.04-server-cloudimg-amd64.ova'
+#   file = Downloader.new(file_url)
 #   # Start download file
 #   file.download
 class Downloader
@@ -44,9 +45,11 @@ class Downloader
 
   # Returns name of file from URL string
   # @param url [Sting] The URL of the file
-  # @example filname 'https://cloud-images.ubuntu.com/releases/16.04/release/ubuntu-16.04-server-cloudimg-amd64.ova'
+  # @example
+  #   ova_url = 'https://cloud-images.ubuntu.com/releases/16.04/release/ubuntu-16.04-server-cloudimg-amd64.ova'
+  #   filname(ova_url) #=> ubuntu-16.04-server-cloudimg-amd64.ova
   #
-  # @return [String] Base name of the file: ubuntu-16.04-server-cloudimg-amd64.ova
+  # @return [String] Base name of file
   def filename(url)
     uri = URI(url)
     File.basename(uri.path)

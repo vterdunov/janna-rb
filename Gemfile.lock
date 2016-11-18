@@ -51,6 +51,8 @@ GEM
     tilt (2.0.5)
     trollop (2.1.2)
     yard (0.9.5)
+    yard-sinatra (1.0.0)
+      yard (~> 0.7)
 
 PLATFORMS
   ruby
@@ -68,6 +70,7 @@ DEPENDENCIES
   slack-notifier
   sqlite3
   yard
+  yard-sinatra
 
 BUNDLED WITH
    1.13.5
