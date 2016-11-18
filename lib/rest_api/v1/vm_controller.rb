@@ -3,15 +3,14 @@ require_relative '../../workers/vmware_worker'
 class ApplicationController
   # Create VM
   #
-  # @param provider_type [String] *Required Type of Hypervisor provider.
-  # @param vmname  [String] *Required Name of Virtual Machine
+  # @param provider_type [String] *Required Hypervisor provider type. Possible values: `vmware`
+  # @param vmname  [String] *Required Virtual Machine name
   # @param ova_url [String] *Required URL to OVA file
-  # @param vsphere_network [String] *Optional
-  # @param vsphere_datacenter [String] *Optional
-  # @param vsphere_datastore [String] *Optional
-  # @param vsphere_network [String] *Optional
-  # @param vsphere_cluster [String] *Optional
-  # @param vsphere_vm_folder [String] *Optional
+  # @param vsphere_network [String] *Optional Network name
+  # @param vsphere_datacenter [String] *Optional Datacenter name
+  # @param vsphere_datastore [String] *Optional Datastore name
+  # @param vsphere_cluster [String] *Optional Cluster name
+  # @param vsphere_vm_folder [String] *Optional Folder name where VM will be created
   #
   # @return 202 OK HTTP Response Code. Deploy VM in progress.
   post '/v1/vm' do
