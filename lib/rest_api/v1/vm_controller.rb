@@ -11,6 +11,7 @@ class ApplicationController
   # @param vsphere_datastore [String] *Optional Datastore name
   # @param vsphere_cluster [String] *Optional Cluster name
   # @param vsphere_vm_folder [String] *Optional Folder name where VM will be created
+  # @param message_to [String] *Optional Name or Channel to send messages
   #
   # @return 202 OK HTTP Response Code. Deploy VM in progress.
   post '/v1/vm' do

@@ -10,7 +10,8 @@ class VMwareWorker
   def perform(params)
     vmname = params['vmname']
     ova_url = params['ova_url']
-    notify = Notifier.new
+    notify_options = { message_to: params['message_to'] }
+    notify = Notifier.new(notify_options)
     notify.slack "Start deploy VM: `#{vmname}`"
     ip = do_work(vmname, ova_url, params)
     notify.slack "VM `#{vmname}` has been deployed. IP: #{ip}"

@@ -20,6 +20,7 @@ See [.env](https://github.com/vterdunov/janna/blob/master/.env) file.
 | vsphere_datastore | (*Optional) Datastore name |
 | vsphere_cluster | (*Optional) Cluster name |
 | vsphere_vm_folder | (*Optional) Folder name where VM will be created |
+| message_to | (*Optional) Name or Channel to send messages |
 
 ##### Pre-requirements
 Docker and docker-compose needs to be installed.
