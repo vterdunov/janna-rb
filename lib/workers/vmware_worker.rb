@@ -8,12 +8,13 @@ class VMwareWorker
   sidekiq_options retry: false
 
   def perform(params)
-    vmname = params['vmname']
-    ova_url = params['ova_url']
-    notify_options = { message_to: params['message_to'] }
+    strip_params = params.map { |key, value| [key, value.strip] }.to_h
+    vmname = strip_params['vmname']
+    ova_url = strip_params['ova_url']
+    notify_options = { message_to: strip_params['message_to'] }
     notify = Notifier.new(notify_options)
     notify.slack "Start deploy VM: `#{vmname}`"
-    ip = do_work(vmname, ova_url, params)
+    ip = do_work(vmname, ova_url, strip_params)
     notify.slack "VM `#{vmname}` has been deployed. IP: #{ip}"
   rescue RuntimeError => e
     $logger.error { e.message }
