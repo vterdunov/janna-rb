@@ -3,7 +3,7 @@ This application will deploy your VM on VMware. Your VM should be OVA file.
 Janna will sent you slack notification when your Virtual machine will be ready.
 
 ### Configuration
-See [.env](https://github.com/vterdunov/janna/blob/master/.env) file.
+See [.env](https://github.com/vterdunov/janna/blob/master/.env.example) file.
 
 ### API
 | Endpoint | Description |
