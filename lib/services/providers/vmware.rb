@@ -4,45 +4,53 @@ require 'rbvmomi/utils/admission_control'
 require 'yaml'
 
 class VMware
+  attr_reader :ovf_path, :vm_name, :opts
   VIM = RbVmomi::VIM
 
   def initialize(ovf_path, vm_name, opts)
     @ovf_path = ovf_path
-    @vm_name = vm_name
-    @opts = {
-      host:     ENV['VSPHERE_ADDRESS'],
-      port:     ENV['VSPHERE_PORT'],
-      user:     ENV['VSPHERE_USERNAME'],
-      password: ENV['VSPHERE_PASSWORD'],
-      insecure: true,
-      path: '/sdk',
-      datacenter:     opts['vsphere_datacenter'] || ENV['VSPHERE_DC'],
-      datastore:      opts['vsphere_datastore']  || ENV['VSPHERE_DATASTORE'],
-      computer_path:  opts['vsphere_cluster']    || ENV['VSPHERE_CLUSTER'],
-      network:        opts['vsphere_network']    || ENV['VSPHERE_NETWORK'],
-      vm_folder_path: opts['vsphere_vm_folder']  || ENV['VSPHERE_VM_FOLDER'],
-      ssl: true,
-      debug: false
+    @vm_name  = vm_name
+    @opts     = defaults.merge(opts)
+  end
+
+  def defaults
+    {
+      host:           ENV['VSPHERE_ADDRESS'],
+      port:           ENV['VSPHERE_PORT'],
+      user:           ENV['VSPHERE_USERNAME'],
+      password:       ENV['VSPHERE_PASSWORD'],
+      datacenter:     ENV['VSPHERE_DC'],
+      datastore:      ENV['VSPHERE_DATASTORE'],
+      computer_path:  ENV['VSPHERE_CLUSTER'],
+      network:        ENV['VSPHERE_NETWORK'],
+      vm_folder_path: ENV['VSPHERE_VM_FOLDER'],
+      path:           '/sdk',
+      insecure:       true,
+      ssl:            true,
+      debug:          false
     }
   end
 
   def deploy
+    filtered_opts = opts.clone
+    filtered_opts[:password] = 'SECRET'
+    $logger.debug { "VMware options: #{filtered_opts}" }
     # get resources
     $logger.debug { 'Get resources from vmware' }
-    vim = VIM.connect @opts
-    dc = vim.serviceInstance.find_datacenter(@opts[:datacenter])
+    vim = VIM.connect opts
+    dc = vim.serviceInstance.find_datacenter(opts[:datacenter])
     root_vm_folder = dc.vmFolder
 
-    vm_folder = root_vm_folder.traverse(@opts[:vm_folder_path], VIM::Folder)
+    vm_folder = root_vm_folder.traverse(opts[:vm_folder_path], VIM::Folder)
 
     $logger.debug { 'Create scheduler' }
     scheduler = AdmissionControlledResourceScheduler.new(
       vim,
       datacenter: dc,
-      computer_names: [@opts[:computer_path]],
+      computer_names: [opts[:computer_path]],
       vm_folder: vm_folder,
       rp_path: '/',
-      datastore_paths: [@opts[:datastore]],
+      datastore_paths: [opts[:datastore]],
       max_vms_per_pod: nil, # No limits
       min_ds_free: nil, # No limits
     )
@@ -70,9 +78,9 @@ class VMware
     raise 'No host in the cluster available to upload OVF to' unless host
 
     $logger.debug { 'Get networks' }
-    network = computer.network.find { |x| x.name == @opts[:network] }
+    network = computer.network.find { |x| x.name == opts[:network] }
 
-    ovf = open(@ovf_path, 'r') { |io| Nokogiri::XML(io.read) }
+    ovf = open(ovf_path, 'r') { |io| Nokogiri::XML(io.read) }
     ovf.remove_namespaces!
     networks = ovf.xpath('//NetworkSection/Network').map { |x| x['name'] }
     network_mappings = Hash[networks.map { |x| [x, network] }]
@@ -83,7 +91,7 @@ class VMware
     property_mappings = {}
 
     # -------------------------------------------------------------------------
-    vm = ovf_deploy(vim, @ovf_path, @vm_name, vm_folder, host, rp, datastore, network_mappings, property_mappings)
+    vm = ovf_deploy(vim, ovf_path, vm_name, vm_folder, host, rp, datastore, network_mappings, property_mappings)
     ip = powerup_vm vm
     ip
   end
