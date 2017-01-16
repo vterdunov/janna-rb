@@ -1,4 +1,5 @@
-require_relative '../../workers/vmware_worker'
+require_relative '../../workers/vmware_deploy'
+require_relative '../../workers/vmware_destroy'
 
 class ApplicationController
   # Create VM
@@ -18,7 +19,7 @@ class ApplicationController
     case params[:provider_type]
     when 'vmware'
       $logger.info { "provider=vmware, params=#{params}" }
-      VMwareWorker.perform_async params
+      VMwareDeploy.perform_async params
     when 'dummy'
       $logger.debug { "provider=dummy, params=#{params}" }
     else
@@ -36,6 +37,17 @@ class ApplicationController
 
   # Delete VM
   delete '/v1/vm' do
-    halt 400, 'Not implemented yet.'
+    case params[:provider_type]
+    when 'vmware'
+      $logger.info { "provider=vmware, params=#{params}" }
+      VMwareDestroy.perform_async params
+    when 'dummy'
+      $logger.debug { "provider=dummy, params=#{params}" }
+    else
+      $logger.info { 'Undefined provider type. Halt request.' }
+      halt 400, 'Undefined provider type.'
+    end
+
+    status 202
   end
 end

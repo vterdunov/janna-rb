@@ -7,7 +7,7 @@ class VMware
   attr_reader :ovf_path, :vm_name, :opts
   VIM = RbVmomi::VIM
 
-  def initialize(ovf_path, vm_name, opts)
+  def initialize(ovf_path: '', vm_name: '', opts: {})
     @ovf_path = ovf_path
     @vm_name  = vm_name
     @opts     = defaults.merge(opts)
@@ -94,6 +94,29 @@ class VMware
     vm = ovf_deploy(vim, ovf_path, vm_name, vm_folder, host, rp, datastore, network_mappings, property_mappings)
     ip = powerup_vm vm
     ip
+  end
+
+  def destroy
+    filtered_opts = opts.clone
+    filtered_opts[:password] = 'SECRET'
+    $logger.debug { "VMware options: #{filtered_opts}" }
+    # get resources
+    $logger.debug { 'Get resources from vmware' }
+    vim = VIM.connect opts
+    dc = vim.serviceInstance.content.rootFolder.traverse(opts[:datacenter], VIM::Datacenter) or abort "datacenter not found"
+    vm_full_path = opts[:vm_folder_path] + '/' + vm_name
+    vm = dc.vmFolder.traverse(vm_full_path, VIM::VirtualMachine) || raise('ERROR: VM not found.')
+    begin
+      vm.PowerOffVM_Task.wait_for_completion
+    rescue RbVmomi::Fault
+      $logger.debug { 'VM already powered off' }
+    end
+    begin
+      vm.Destroy_Task.wait_for_completion
+    rescue RbVmomi::Fault
+      $logger.debug { "Failed destring VM: #{vm_full_path}" }
+      raise "ERROR: Failed destring VM: #{vm_full_path}"
+    end
   end
 
   private
