@@ -11,7 +11,7 @@ See [.env](https://github.com/vterdunov/janna/blob/master/.env.example) file.
 | **GET /health** | **Check health. Return 200 OK.** |
 |||
 | **POST /v1/vm** | **Create VM** |
-| Parameter | Description|
+| _Parameter_ | _Description_|
 | provider_type | Hypervisor provider type. Possible values: `vmware` |
 | vmname | Virtual Machine name |
 | ova_url | URL to OVA file |
@@ -21,6 +21,11 @@ See [.env](https://github.com/vterdunov/janna/blob/master/.env.example) file.
 | vsphere_cluster | (*Optional) Cluster name |
 | vsphere_vm_folder | (*Optional) Folder name where VM will be created |
 | message_to | (*Optional) Name or Channel to send messages |
+|||
+| **DELETE /v1/vm** | **Create VM** |
+| _Parameter_ | _Description_|
+| provider_type | Hypervisor provider type. Possible values: `vmware` |
+| vmname | Virtual Machine name |
 
 ##### Pre-requirements
 Docker and docker-compose needs to be installed.
