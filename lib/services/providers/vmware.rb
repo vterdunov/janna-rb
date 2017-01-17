@@ -32,33 +32,42 @@ class VMware
   end
 
   def deploy
-    filtered_opts = opts.clone
-    filtered_opts[:password] = 'SECRET'
-    $logger.debug { "VMware options: #{filtered_opts}" }
-    # get resources
-    $logger.debug { 'Get resources from vmware' }
-    vim = VIM.connect opts
-    dc = vim.serviceInstance.find_datacenter(opts[:datacenter])
-    root_vm_folder = dc.vmFolder
+    $logger.info { 'Start deploy VM to VMware.' }
+    vm = create_vm
+    powerup_vm(vm)
+  end
 
-    vm_folder = root_vm_folder.traverse(opts[:vm_folder_path], VIM::Folder)
+  def destroy
+    $logger.info { 'Start destroy VM from VMware.' }
+    vim ||= getting_vim
+    dc           = datacenter(vim)
+    vm           = getting_vm(dc, vm_name)
+    begin
+      vm.PowerOffVM_Task.wait_for_completion
+    rescue RbVmomi::Fault
+      $logger.debug { 'VM already powered off' }
+    end
+    begin
+      vm.Destroy_Task.wait_for_completion
+    rescue RbVmomi::Fault
+      $logger.debug { "Failed to destroy the VM: #{vm_full_path}" }
+      raise "ERROR: Failed to destroy the VM: #{vm_full_path}"
+    end
+  end
 
-    $logger.debug { 'Create scheduler' }
-    scheduler = AdmissionControlledResourceScheduler.new(
-      vim,
-      datacenter: dc,
-      computer_names: [opts[:computer_path]],
-      vm_folder: vm_folder,
-      rp_path: '/',
-      datastore_paths: [opts[:datastore]],
-      max_vms_per_pod: nil, # No limits
-      min_ds_free: nil, # No limits
-    )
+  private
+
+  def create_vm
+    vim ||= getting_vim
+    dc        = datacenter(vim)
+    vm_folder = get_vm_folder(dc)
+    # vm        = getting_vm(dc, vm_name)
+    scheduler = create_scheduler(vim, dc, vm_folder)
+
     scheduler.make_placement_decision
-
-    datastore = scheduler.datastore
-    computer = scheduler.pick_computer
-    rp = computer.resourcePool
+    datastore     = scheduler.datastore
+    computer      = scheduler.pick_computer
+    resource_pool = computer.resourcePool
 
     pc = vim.serviceContent.propertyCollector
     $logger.debug { 'Choose computer from cluster' }
@@ -75,7 +84,7 @@ class VMware
       is_connected && is_ds_accessible && !host_props['runtime.inMaintenanceMode']
     end
 
-    raise 'No host in the cluster available to upload OVF to' unless host
+    raise 'ERROR: No host in the cluster available to upload OVF to' unless host
 
     $logger.debug { 'Get networks' }
     network = computer.network.find { |x| x.name == opts[:network] }
@@ -86,42 +95,69 @@ class VMware
     network_mappings = Hash[networks.map { |x| [x, network] }]
 
     network_mappings_str = network_mappings.map { |k, v| "#{k} = #{v.name}" }
-    puts "networks: #{network_mappings_str.join(', ')}"
+    $logger.info { "Network: #{network_mappings_str.join(', ')}" }
 
     property_mappings = {}
 
-    # -------------------------------------------------------------------------
-    vm = ovf_deploy(vim, ovf_path, vm_name, vm_folder, host, rp, datastore, network_mappings, property_mappings)
-    ip = powerup_vm vm
-    ip
+    params = { vim: vim,
+               ovf_path: ovf_path,
+               vm_name: vm_name,
+               vm_folder: vm_folder,
+               host: host,
+               resource_pool: resource_pool,
+               datastore: datastore,
+               network_mappings: network_mappings,
+               property_mappings: property_mappings }
+
+    ovf_deploy(params)
   end
 
-  def destroy
+  def getting_vim
+    $logger.debug { 'Connect to VMware' }
     filtered_opts = opts.clone
     filtered_opts[:password] = 'SECRET'
     $logger.debug { "VMware options: #{filtered_opts}" }
-    # get resources
-    $logger.debug { 'Get resources from vmware' }
-    vim = VIM.connect opts
-    dc = vim.serviceInstance.content.rootFolder.traverse(opts[:datacenter], VIM::Datacenter) or abort "datacenter not found"
-    vm_full_path = opts[:vm_folder_path] + '/' + vm_name
-    vm = dc.vmFolder.traverse(vm_full_path, VIM::VirtualMachine) || raise('ERROR: VM not found.')
-    begin
-      vm.PowerOffVM_Task.wait_for_completion
-    rescue RbVmomi::Fault
-      $logger.debug { 'VM already powered off' }
-    end
-    begin
-      vm.Destroy_Task.wait_for_completion
-    rescue RbVmomi::Fault
-      $logger.debug { "Failed destring VM: #{vm_full_path}" }
-      raise "ERROR: Failed destring VM: #{vm_full_path}"
-    end
+    VIM.connect opts
   end
 
-  private
+  def datacenter(vim)
+    $logger.debug { 'Get datacenter' }
+    vim.serviceInstance.find_datacenter(opts[:datacenter]) || raise('ERROR: Datacenter not found.')
+  end
 
-  def ovf_deploy(vim, ovf_path, vm_name, vm_folder, host, resource_pool, datastore, network_mappings, property_mappings)
+  def get_vm_folder(dc)
+    $logger.debug { 'Get VM folder' }
+    dc.vmFolder.traverse(opts[:vm_folder_path], VIM::Folder)
+  end
+
+  def create_scheduler(vim, dc, vm_folder)
+    $logger.debug { 'Create scheduler' }
+    AdmissionControlledResourceScheduler.new(
+      vim,
+      datacenter: dc,
+      computer_names: [opts[:computer_path]],
+      vm_folder: vm_folder,
+      rp_path: '/',
+      datastore_paths: [opts[:datastore]],
+      max_vms_per_pod: nil, # No limits
+      min_ds_free: nil, # No limits
+    )
+  end
+
+  def getting_vm(datacenter, vm_name)
+    vm_full_path = opts[:vm_folder_path] + '/' + vm_name
+    datacenter.vmFolder.traverse(vm_full_path, VIM::VirtualMachine) || raise("ERROR: VM `#{vm_name}` not found.")
+  end
+
+  def ovf_deploy(vim: nil,
+                 ovf_path: '',
+                 vm_name: '',
+                 vm_folder: nil,
+                 host: nil,
+                 resource_pool: nil,
+                 datastore: nil,
+                 network_mappings: nil,
+                 property_mappings: nil)
     vim.serviceContent.ovfManager.deployOVF(
       uri: ovf_path,
       vmName: vm_name,
@@ -132,6 +168,10 @@ class VMware
       networkMappings: network_mappings,
       propertyMappings: property_mappings
     )
+  rescue RbVmomi::Fault => e
+    $logger.error { e.message }
+    $logger.error { e.backtrace.inspect }
+    raise "ERROR: #{e.message}"
   end
 
   def powerup_vm(vm)

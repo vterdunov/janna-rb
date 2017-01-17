@@ -13,13 +13,13 @@ class VMwareDeploy
     ova_url = strip_params['ova_url']
     notify_options = { message_to: strip_params['message_to'] }
     notify = Notifier.new(notify_options)
-    notify.slack "Start deploy VM: `#{vmname}`"
+    notify.slack(text: "Start deploy VM: `#{vmname}`")
     ip = do_work(vmname, ova_url, strip_params)
-    notify.slack "VM `#{vmname}` has been deployed. IP: #{ip}"
+    notify.slack(text: "VM `#{vmname}` has been deployed. IP: #{ip}", message_level: 'good')
   rescue RuntimeError => e
     $logger.error { e.message }
     $logger.error { e.backtrace.inspect }
-    notify.slack e.message
+    notify.slack(text: e.message, message_level: 'error')
   end
 
   def do_work(vmname, ova_url, params)

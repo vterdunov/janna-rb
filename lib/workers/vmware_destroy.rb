@@ -12,13 +12,13 @@ class VMwareDestroy
     vmname = strip_params['vmname']
     notify_options = { message_to: strip_params['message_to'] }
     notify = Notifier.new(notify_options)
-    notify.slack "Start destroy VM: `#{vmname}`."
+    notify.slack(text: "Start destroy VM: `#{vmname}`.")
     do_work(vmname, strip_params)
-    notify.slack "VM `#{vmname}` has been destroyed."
+    notify.slack(text: "VM `#{vmname}` has been destroyed.", message_level: 'good')
   rescue RuntimeError => e
     $logger.error { e.message }
     $logger.error { e.backtrace.inspect }
-    notify.slack e.message
+    notify.slack(text: e.message, message_level: 'error')
   end
 
   def do_work(vmname, params)
