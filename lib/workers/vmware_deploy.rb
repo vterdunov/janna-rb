@@ -23,6 +23,7 @@ class VMwareDeploy
   end
 
   def do_work(vmname, ova_url, params)
+    raise "ERROR: VM `#{vmname}` already exists." if VMware.new(vm_name: vmname).vm_exist?
     ova_path = Downloader.new(ova_url).download
     tmp_dir  = Unpacker.new(ova_path).tar
     ovf_path = Dir["#{tmp_dir}/**/*.ovf"].first

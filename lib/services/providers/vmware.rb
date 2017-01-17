@@ -32,16 +32,16 @@ class VMware
   end
 
   def deploy
-    $logger.info { 'Start deploy VM to VMware.' }
+    $logger.info { 'Start deploy VM to VMware' }
     vm = create_vm
     powerup_vm(vm)
   end
 
   def destroy
-    $logger.info { 'Start destroy VM from VMware.' }
+    $logger.info { 'Start destroy VM from VMware' }
     vim ||= getting_vim
     dc           = datacenter(vim)
-    vm           = getting_vm(dc, vm_name)
+    vm           = getting_vm(dc, vm_name) || raise("ERROR: VM `#{vm_name}` not found.")
     begin
       vm.PowerOffVM_Task.wait_for_completion
     rescue RbVmomi::Fault
@@ -55,13 +55,19 @@ class VMware
     end
   end
 
+  def vm_exist?
+    $logger.info { 'Check if VM already exists' }
+    vim ||= getting_vim
+    dc = datacenter(vim)
+    getting_vm(dc, vm_name)
+  end
+
   private
 
   def create_vm
     vim ||= getting_vim
     dc        = datacenter(vim)
     vm_folder = get_vm_folder(dc)
-    # vm        = getting_vm(dc, vm_name)
     scheduler = create_scheduler(vim, dc, vm_folder)
 
     scheduler.make_placement_decision
@@ -146,7 +152,7 @@ class VMware
 
   def getting_vm(datacenter, vm_name)
     vm_full_path = opts[:vm_folder_path] + '/' + vm_name
-    datacenter.vmFolder.traverse(vm_full_path, VIM::VirtualMachine) || raise("ERROR: VM `#{vm_name}` not found.")
+    datacenter.vmFolder.traverse(vm_full_path, VIM::VirtualMachine)
   end
 
   def ovf_deploy(vim: nil,
