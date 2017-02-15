@@ -10,7 +10,7 @@ See [.env](https://github.com/vterdunov/janna/blob/master/.env.example) file.
 | ---- | --------------- |
 | **GET /health** | **Check health. Return 200 OK.** |
 |||
-| **POST /v1/vm** | **Create VM** |
+| **POST /v1/vm** | **Create VM from OVA file** |
 | _Parameter_ | _Description_|
 | provider_type | Hypervisor provider type. Possible values: `vmware` |
 | vmname | Virtual Machine name |
@@ -22,7 +22,19 @@ See [.env](https://github.com/vterdunov/janna/blob/master/.env.example) file.
 | vsphere_vm_folder | (*Optional) Folder name where VM will be created |
 | message_to | (*Optional) Name or Channel to send messages |
 |||
-| **DELETE /v1/vm** | **Create VM** |
+| **POST /v1/vm** | **Create VM from Template** |
+| _Parameter_ | _Description_|
+|||
+| provider_type | Hypervisor provider type. Possible values: `vmware` |
+| vmname | Virtual Machine name |
+| template_name | Name of Template |
+| vsphere_network | (*Optional) Network name |
+| vsphere_datacenter | (*Optional) Datacenter name |
+| vsphere_datastore | (*Optional) Datastore name |
+| vsphere_cluster | (*Optional) Cluster name |
+| vsphere_vm_folder | (*Optional) Folder name where VM will be created |
+| message_to | (*Optional) Name or Channel to send messages |
+| **DELETE /v1/vm** | **Delete VM** |
 | _Parameter_ | _Description_|
 | provider_type | Hypervisor provider type. Possible values: `vmware` |
 | vmname | Virtual Machine name |
