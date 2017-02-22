@@ -3,7 +3,7 @@ require_relative '../services/downloader'
 require_relative '../services/unpacker'
 require_relative '../services/providers/vmware'
 
-class VMwareDestroy
+class VMwareDestroyVM
   include Sidekiq::Worker
   sidekiq_options retry: false
 
@@ -22,6 +22,6 @@ class VMwareDestroy
   end
 
   def do_work(vmname, params)
-    VMware.new(vm_name: vmname, opts: params).destroy
+    VMware.new(vm_name: vmname, opts: params).destroy_vm
   end
 end

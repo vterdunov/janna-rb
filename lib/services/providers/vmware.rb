@@ -4,13 +4,14 @@ require 'rbvmomi/utils/admission_control'
 require 'yaml'
 
 class VMware
-  attr_reader :ovf_path, :vm_name, :opts
+  attr_reader :ovf_path, :vm_name, :template_name, :opts
   VIM = RbVmomi::VIM
 
-  def initialize(ovf_path: '', vm_name: '', opts: {})
-    @ovf_path = ovf_path
-    @vm_name  = vm_name
-    @opts     = defaults.merge(opts)
+  def initialize(ovf_path: '', vm_name: '', template_name: '', opts: {})
+    @ovf_path      = ovf_path
+    @vm_name       = vm_name
+    @template_name = template_name
+    @opts          = defaults.merge(opts)
   end
 
   def defaults
@@ -24,6 +25,7 @@ class VMware
       computer_path:  ENV['VSPHERE_CLUSTER'],
       network:        ENV['VSPHERE_NETWORK'],
       vm_folder_path: ENV['VSPHERE_VM_FOLDER'],
+      template_path:  ENV['VSPHERE_TEMPLATE_PATH'],
       path:           '/sdk',
       insecure:       true,
       ssl:            true,
@@ -31,13 +33,38 @@ class VMware
     }
   end
 
-  def deploy
-    $logger.info { 'Start deploy VM to VMware' }
+  def deploy_ova
+    $logger.info { 'Start deploy VM from OVA to VMware' }
     vm = create_vm
     powerup_vm(vm)
   end
 
-  def destroy
+  def deploy_from_template
+    $logger.info { 'Start deploy VM from Template to VMware' }
+    vim ||= getting_vim
+    dc = datacenter(vim)
+    vm_folder = get_vm_folder(dc)
+    scheduler = create_scheduler(vim, dc, vm_folder)
+
+    scheduler.make_placement_decision
+    datastore       = scheduler.datastore
+    computer        = scheduler.pick_computer
+    network         = computer.network.find { |x| x.name == opts[:network] }
+    root_vm_folder  = dc.vmFolder
+    template_folder = root_vm_folder.traverse!(opts[:vm_folder_path], VIM::Folder)
+
+    deployer = CachedOvfDeployer.new(
+      vim, network, computer, template_folder, vm_folder, datastore
+    )
+
+    template = vim.serviceInstance.find_datacenter.find_vm("#{opts[:template_path]}/#{template_name}") or abort ('Template Not Found!')
+    config = {}
+    vm = deployer.linked_clone template, vm_name, config
+
+    powerup_vm(vm)
+  end
+
+  def destroy_vm
     $logger.info { 'Start destroy VM from VMware' }
     vim ||= getting_vim
     dc           = datacenter(vim)
