@@ -1,5 +1,5 @@
 # Janna
-This application will deploy your VM on VMware. Your VM should be OVA file.  
+This application will deploy your VM on VMware from OVA file or Template.  
 Janna will sent you slack notification when your Virtual machine will be ready.
 
 ### Configuration
