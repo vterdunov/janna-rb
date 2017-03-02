@@ -1,5 +1,4 @@
 FROM ruby:2.3-alpine
-MAINTAINER Terdunov Vyacheslav <mail2slick@gmail.com>
 
 ENV APP_HOME /usr/src
 
