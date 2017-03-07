@@ -7,10 +7,10 @@ class VMware
   attr_reader :ovf_path, :vm_name, :template_name, :opts
   VIM = RbVmomi::VIM
 
-  def initialize(ovf_path: '', vm_name: '', template_name: '', opts: {})
-    @ovf_path      = ovf_path
-    @vm_name       = vm_name
-    @template_name = template_name
+  def initialize(opts)
+    @ovf_path      = opts[:ovf_path]
+    @vm_name       = opts[:vmname]
+    @template_name = opts[:template_name]
     @opts          = defaults.merge(opts)
   end
 
@@ -57,7 +57,8 @@ class VMware
       vim, network, computer, template_folder, vm_folder, datastore
     )
 
-    template = vim.serviceInstance.find_datacenter.find_vm("#{opts[:template_path]}/#{template_name}") or abort ('Template Not Found!')
+    (template = vim.serviceInstance.find_datacenter.find_vm("#{opts[:template_path]}/#{template_name}")) ||
+      abort('Template Not Found!')
     config = {}
     vm = deployer.linked_clone template, vm_name, config
 
@@ -208,12 +209,12 @@ class VMware
   end
 
   def powerup_vm(vm)
-    $logger.info 'Powering On VM ...'
+    $logger.info 'Powering On VM...'
     vm.PowerOnVM_Task.wait_for_completion
 
     until (ip = vm.guest_ip)
       sleep 5
-      $logger.info 'Waiting for VM to be up ...'
+      $logger.info 'Waiting for VM to be up...'
     end
 
     $logger.info "VM got IP: #{ip}"

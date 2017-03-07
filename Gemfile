@@ -2,9 +2,9 @@ source 'https://rubygems.org'
 
 gem 'bundler'
 gem 'dotenv'
-gem 'sinatra'
-gem 'sidekiq'
 gem 'rbvmomi'
+gem 'sidekiq'
+gem 'sinatra'
 gem 'slack-notifier'
 
 group :development do
@@ -18,8 +18,8 @@ group :test, :development do
 end
 
 group :test do
-  gem 'rspec'
   gem 'rack-test'
+  gem 'rspec'
 end
 
 group :production do

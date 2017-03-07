@@ -1,5 +1,5 @@
 # Janna
-This application will deploy your VM on VMware. Your VM should be OVA file.  
+This application will deploy your VM on VMware from OVA file or Template.  
 Janna will sent you slack notification when your Virtual machine will be ready.
 
 ### Configuration
@@ -15,11 +15,11 @@ See [.env](https://github.com/vterdunov/janna/blob/master/.env.example) file.
 | provider_type | Hypervisor provider type. Possible values: `vmware` |
 | vmname | Virtual Machine name |
 | ova_url | URL to OVA file |
-| vsphere_network | (*Optional) Network name |
-| vsphere_datacenter | (*Optional) Datacenter name |
-| vsphere_datastore | (*Optional) Datastore name |
-| vsphere_cluster | (*Optional) Cluster name |
-| vsphere_vm_folder | (*Optional) Folder name where VM will be created |
+| network | (*Optional) Network name |
+| datacenter | (*Optional) Datacenter name |
+| datastore | (*Optional) Datastore name |
+| cluster | (*Optional) Cluster name |
+| vm_folder | (*Optional) Folder name where VM will be created |
 | message_to | (*Optional) Name or Channel to send messages |
 |||
 | **POST /v1/vm** | **Create VM from Template** |
@@ -28,11 +28,11 @@ See [.env](https://github.com/vterdunov/janna/blob/master/.env.example) file.
 | provider_type | Hypervisor provider type. Possible values: `vmware` |
 | vmname | Virtual Machine name |
 | template_name | Name of Template |
-| vsphere_network | (*Optional) Network name |
-| vsphere_datacenter | (*Optional) Datacenter name |
-| vsphere_datastore | (*Optional) Datastore name |
-| vsphere_cluster | (*Optional) Cluster name |
-| vsphere_vm_folder | (*Optional) Folder name where VM will be created |
+| network | (*Optional) Network name |
+| datacenter | (*Optional) Datacenter name |
+| datastore | (*Optional) Datastore name |
+| cluster | (*Optional) Cluster name |
+| vm_folder | (*Optional) Folder name where VM will be created |
 | message_to | (*Optional) Name or Channel to send messages |
 | **DELETE /v1/vm** | **Delete VM** |
 | _Parameter_ | _Description_|
