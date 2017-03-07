@@ -10,7 +10,7 @@ class VMwareDeployOVA
 
   def perform(params)
     strip_params = PreparerParams.new(params).prepare
-    notify_options = { message_to: strip_params['message_to'] }
+    notify_options = { message_to: strip_params[:message_to] }
     notify = Notifier.new(notify_options)
     notify.slack(text: "Start deploy VM: `#{strip_params[:vmname]}`")
 
