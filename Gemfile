@@ -6,6 +6,7 @@ gem 'rbvmomi'
 gem 'sidekiq'
 gem 'sinatra'
 gem 'slack-notifier'
+gem 'activesupport'
 
 group :development do
   gem 'shotgun'
