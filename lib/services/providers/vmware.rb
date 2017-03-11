@@ -2,9 +2,11 @@ require 'rbvmomi'
 require 'rbvmomi/utils/deploy'
 require 'rbvmomi/utils/admission_control'
 require 'yaml'
+require_relative 'vmware_wrapper'
 
 class VMware
   attr_reader :ovf_path, :vm_name, :template_name, :opts
+  # TODO: Researh about the constant.
   VIM = RbVmomi::VIM
 
   def initialize(opts)
@@ -41,8 +43,7 @@ class VMware
 
   def deploy_from_template
     $logger.info { 'Start deploy VM from Template to VMware' }
-    vim ||= getting_vim
-    dc = datacenter(vim)
+    dc = datacenter
     vm_folder = get_vm_folder(dc)
     scheduler = create_scheduler(vim, dc, vm_folder)
 
@@ -67,8 +68,7 @@ class VMware
 
   def destroy_vm
     $logger.info { 'Start destroy VM from VMware' }
-    vim ||= getting_vim
-    dc           = datacenter(vim)
+    dc           = datacenter
     vm           = getting_vm(dc, vm_name) || raise("ERROR: VM `#{vm_name}` not found.")
     begin
       vm.PowerOffVM_Task.wait_for_completion
@@ -85,16 +85,14 @@ class VMware
 
   def vm_exist?
     $logger.info { 'Check if VM already exists' }
-    vim ||= getting_vim
-    dc = datacenter(vim)
+    dc = datacenter
     getting_vm(dc, vm_name)
   end
 
   private
 
   def create_vm
-    vim ||= getting_vim
-    dc        = datacenter(vim)
+    dc        = datacenter
     vm_folder = get_vm_folder(dc)
     scheduler = create_scheduler(vim, dc, vm_folder)
 
@@ -146,17 +144,14 @@ class VMware
     ovf_deploy(params)
   end
 
-  def getting_vim
-    $logger.debug { 'Connect to VMware' }
-    filtered_opts = opts.clone
-    filtered_opts[:password] = 'SECRET'
-    $logger.debug { "VMware options: #{filtered_opts}" }
-    VIM.connect opts
+  # TODO: Inject as dependency?
+  def vim
+    VMwareWrapper.vim(opts)
   end
 
-  def datacenter(vim)
-    $logger.debug { 'Get datacenter' }
-    vim.serviceInstance.find_datacenter(opts[:datacenter]) || raise('ERROR: Datacenter not found.')
+  # TODO: Inject as dependency?
+  def datacenter
+    VMwareWrapper.datacenter(opts)
   end
 
   def get_vm_folder(dc)
