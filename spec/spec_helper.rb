@@ -1,6 +1,7 @@
 require 'rack/test'
 require 'rspec'
 require 'webmock/rspec'
+require 'sidekiq/testing'
 require 'byebug'
 
 WebMock.disable_net_connect!(allow_localhost: true)

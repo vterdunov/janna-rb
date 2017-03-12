@@ -20,6 +20,7 @@ group :test, :development do
 end
 
 group :test do
+  gem 'rspec-sidekiq'
   gem 'webmock'
   gem 'rack-test'
   gem 'rspec'
