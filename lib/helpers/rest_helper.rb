@@ -1,7 +1,7 @@
-require_relative '../workers/vmware_deploy_ova'
-require_relative '../workers/vmware_destroy_vm'
+require_relative '../workers/vmware/vmware_deploy_ova'
+require_relative '../workers/vmware/vmware_destroy_vm'
+require_relative '../workers/vmware/vmware_deploy_template'
 require_relative '../services/providers/vmware/vmware_vm'
-require_relative '../workers/vmware_deploy_template'
 
 Dummy = Struct.new(:perform_async, :new) do
   def perform_async(*asdf); end

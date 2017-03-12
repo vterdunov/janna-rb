@@ -1,5 +1,5 @@
 require_relative '../abstract_worker'
-require_relative '../services/providers/vmware'
+require_relative '../../services/providers/vmware'
 
 class VMwareDestroyVM < AbstractWorker
   def do_work(vim, datacenter, params)
