@@ -12,6 +12,7 @@ group :development do
   gem 'shotgun'
   gem 'yard'
   gem 'yard-sinatra'
+  gem 'byebug'
 end
 
 group :test, :development do
@@ -19,6 +20,7 @@ group :test, :development do
 end
 
 group :test do
+  gem 'webmock'
   gem 'rack-test'
   gem 'rspec'
 end
