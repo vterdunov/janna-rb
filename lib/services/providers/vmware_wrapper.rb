@@ -16,8 +16,7 @@ module VMwareWrapper
   # return [RbVmomi::VIM]
   def self.vim(opts)
     $logger.debug { 'Get VIM' }
-    vim = RbVmomi::VIM.connect opts
-    vim
+    RbVmomi::VIM.connect opts
   end
 
   # VMware datacenter
