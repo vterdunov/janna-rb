@@ -1,7 +1,5 @@
-require_relative '../../workers/vmware_deploy_template'
-require_relative '../../workers/vmware_destroy_vm'
-
 class ApplicationController
+
   # Create VM from Template
   #
   # @param provider_type [String] *Required Hypervisor provider type. Possible values: `vmware`
@@ -17,17 +15,7 @@ class ApplicationController
   #
   # @return 202 OK HTTP Response Code. Deploy VM in progress.
   post '/v1/template' do
-    case params[:provider_type]
-    when 'vmware'
-      $logger.info { "provider=vmware, params=#{params}" }
-      VMwareDeployTemplate.perform_async params
-    when 'dummy'
-      $logger.debug { "provider=dummy, params=#{params}" }
-    else
-      $logger.info { 'Undefined provider type. Halt request.' }
-      halt 400, 'Undefined provider type.'
-    end
-
+    provider_worker.perform_async(vm_params)
     status 202
   end
 end

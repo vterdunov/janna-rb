@@ -1,5 +1,7 @@
 require 'dotenv'
 require 'logger'
+require 'active_support'
+require 'active_support/core_ext'
 
 Dotenv.load(
   File.expand_path("#{__dir__}/../.env.local", __FILE__),

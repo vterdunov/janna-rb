@@ -5,34 +5,17 @@ require 'yaml'
 require_relative 'vmware_wrapper'
 
 class VMware
-  attr_reader :ovf_path, :vm_name, :template_name, :opts
+  attr_reader :ovf_path, :vm_name, :template_name, :opts, :vim, :datacenter
   # TODO: Researh about the constant.
   VIM = RbVmomi::VIM
 
-  def initialize(opts)
+  def initialize(vim, datacenter, opts = {})
+    @vim = vim
+    @datacenter = datacenter
     @ovf_path      = opts[:ovf_path]
     @vm_name       = opts[:vmname]
     @template_name = opts[:template_name]
-    @opts          = defaults.merge(opts)
-  end
-
-  def defaults
-    {
-      host:           ENV['VSPHERE_ADDRESS'],
-      port:           ENV['VSPHERE_PORT'],
-      user:           ENV['VSPHERE_USERNAME'],
-      password:       ENV['VSPHERE_PASSWORD'],
-      datacenter:     ENV['VSPHERE_DC'],
-      datastore:      ENV['VSPHERE_DATASTORE'],
-      computer_path:  ENV['VSPHERE_CLUSTER'],
-      network:        ENV['VSPHERE_NETWORK'],
-      vm_folder_path: ENV['VSPHERE_VM_FOLDER'],
-      template_path:  ENV['VSPHERE_TEMPLATE_PATH'],
-      path:           '/sdk',
-      insecure:       true,
-      ssl:            true,
-      debug:          false
-    }
+    @opts          = opts
   end
 
   def deploy_ova
@@ -142,16 +125,6 @@ class VMware
                property_mappings: property_mappings }
 
     ovf_deploy(params)
-  end
-
-  # TODO: Inject as dependency?
-  def vim
-    VMwareWrapper.vim(opts)
-  end
-
-  # TODO: Inject as dependency?
-  def datacenter
-    VMwareWrapper.datacenter(opts)
   end
 
   def get_vm_folder(dc)
