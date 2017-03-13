@@ -10,4 +10,4 @@ before_install:
 install: true
 
 script:
-  - docker run vterdunov/janna /bin/sh -c 'bundle exec rspec'
+  - docker run -t vterdunov/janna bundle exec rspec
