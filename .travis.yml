@@ -1,0 +1,13 @@
+---
+sudo: required
+
+services:
+  - docker
+
+before_install:
+  - docker build -t vterdunov/janna .
+
+install: true
+
+script:
+  - docker run -t vterdunov/janna bundle exec rspec
