@@ -7,5 +7,7 @@ services:
 before_install:
   - docker build -t vterdunov/janna .
 
+install: true
+
 script:
   - docker run vterdunov/janna /bin/sh -c 'bundle exec rspec'
