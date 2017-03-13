@@ -6,8 +6,11 @@ RSpec.describe 'ApplicationController' do
 
   context 'POST /v1/vm' do
     subject { post 'v1/vm', args }
-    let(:args) { { address: 'asdf', vmname: 'asdf', provider_type: 'dummy' } }
-    it { expect(subject.status).to eq 202 }
+
+    context 'dummy' do
+      let(:args) { { address: 'asdf', vmname: 'asdf', provider_type: 'dummy' } }
+      it { expect(subject.status).to eq 202 }
+    end
   end
 
   context 'POST /v1/template' do
