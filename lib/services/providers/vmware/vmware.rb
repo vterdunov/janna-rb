@@ -2,7 +2,7 @@ require 'rbvmomi'
 require 'rbvmomi/utils/deploy'
 require 'rbvmomi/utils/admission_control'
 require 'yaml'
-require_relative 'vmware_wrapper'
+require_relative '../rbvmomi_wrapper'
 
 class VMware
   attr_reader :ovf_path, :vm_name, :template_name, :opts, :vim, :datacenter
@@ -10,8 +10,8 @@ class VMware
   VIM = RbVmomi::VIM
 
   def initialize(vim, datacenter, opts = {})
-    @vim = vim
-    @datacenter = datacenter
+    @vim           = vim
+    @datacenter    = datacenter
     @ovf_path      = opts[:ovf_path]
     @vm_name       = opts[:vmname]
     @template_name = opts[:template_name]

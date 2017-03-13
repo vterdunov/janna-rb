@@ -1,18 +1,18 @@
 source 'https://rubygems.org'
 
+gem 'activesupport'
 gem 'bundler'
 gem 'dotenv'
 gem 'rbvmomi'
 gem 'sidekiq'
 gem 'sinatra'
 gem 'slack-notifier'
-gem 'activesupport'
 
 group :development do
+  gem 'byebug'
   gem 'shotgun'
   gem 'yard'
   gem 'yard-sinatra'
-  gem 'byebug'
 end
 
 group :test, :development do
@@ -20,10 +20,10 @@ group :test, :development do
 end
 
 group :test do
-  gem 'rspec-sidekiq'
-  gem 'webmock'
   gem 'rack-test'
   gem 'rspec'
+  gem 'rspec-sidekiq'
+  gem 'webmock'
 end
 
 group :production do

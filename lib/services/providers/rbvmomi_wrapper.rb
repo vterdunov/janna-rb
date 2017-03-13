@@ -1,6 +1,6 @@
 require 'rbvmomi'
 
-module VMwareWrapper
+module RbvmomiWrapper
   # Virtualized Infrastructure Manager
   #
   # @param [Hash] opts the options to create a datacenter.

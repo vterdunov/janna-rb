@@ -8,8 +8,15 @@ See [.env](https://github.com/vterdunov/janna/blob/master/.env.example) file.
 ### API
 | Endpoint | Description |
 | ---- | --------------- |
-| **GET /health** | **Check health. Return 200 OK.** |
+| **GET /health** | **Check application health. Return 200 OK.** |
 |||
+| **GET /v1/vm** | **Get VM IP Address** |
+| _Parameter_ | _Description_|
+| provider_type | Hypervisor provider type. Possible values: `vmware` |
+| vmname | Virtual Machine name |
+| datacenter | (*Optional) Datacenter name |
+| vm_folder | (*Optional) Folder name where VM will be created |
+| message_to | (*Optional) Name or Channel to send messages |
 | **POST /v1/vm** | **Create VM from OVA file** |
 | _Parameter_ | _Description_|
 | provider_type | Hypervisor provider type. Possible values: `vmware` |
@@ -21,8 +28,12 @@ See [.env](https://github.com/vterdunov/janna/blob/master/.env.example) file.
 | cluster | (*Optional) Cluster name |
 | vm_folder | (*Optional) Folder name where VM will be created |
 | message_to | (*Optional) Name or Channel to send messages |
+| **DELETE /v1/vm** | **Delete VM** |
+| _Parameter_ | _Description_|
+| provider_type | Hypervisor provider type. Possible values: `vmware` |
+| vmname | Virtual Machine name |
 |||
-| **POST /v1/vm** | **Create VM from Template** |
+| **POST /v1/template** | **Create VM from Template** |
 | _Parameter_ | _Description_|
 |||
 | provider_type | Hypervisor provider type. Possible values: `vmware` |
@@ -34,16 +45,14 @@ See [.env](https://github.com/vterdunov/janna/blob/master/.env.example) file.
 | cluster | (*Optional) Cluster name |
 | vm_folder | (*Optional) Folder name where VM will be created |
 | message_to | (*Optional) Name or Channel to send messages |
-| **DELETE /v1/vm** | **Delete VM** |
-| _Parameter_ | _Description_|
-| provider_type | Hypervisor provider type. Possible values: `vmware` |
-| vmname | Virtual Machine name |
+
 
 ##### Pre-requirements
 Docker and docker-compose needs to be installed.
 
 ### Development
 ##### Commands
+`cp .env.example .env.local` Copy and edit local configuration.
 `make start` rebuild and run application in ineractive mode.  
 `make shell <api|worker>` shell access into the specified container.
 
