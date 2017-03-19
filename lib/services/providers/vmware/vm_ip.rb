@@ -7,11 +7,11 @@ class VMwareIP
 
   def initialize(opts)
     @vm_name   = opts[:vmname]
-    @vm_folder = opts[:vm_folder_path]
+    @vm_folder = opts[:vm_folder]
     @opts      = opts
   end
 
-  # return [Array] Array of VM IP addresss
+  # return [Hash] Hash of VM IP addresss
   def vm_ip
     $logger.info { 'Get VM IP addresses' }
     addresses = {}

@@ -38,12 +38,15 @@ class Downloader
 
   # Creates temporary directory in /tmp with `janna-tmp-download-` prefix
   #
+  # @private
   # @return [String] Path to temporary directory
   def mk_tmp_dir
     Dir.mktmpdir('janna-tmp-download-', '/tmp')
   end
 
   # Returns name of file from URL string
+  #
+  # @private
   # @param url [Sting] The URL of the file
   # @example
   #   ova_url = 'https://cloud-images.ubuntu.com/releases/16.04/release/ubuntu-16.04-server-cloudimg-amd64.ova'
@@ -56,6 +59,8 @@ class Downloader
   end
 
   # Downloads file
+  #
+  # @private
   # @param uri [String] The URL of the file
   # @param path [String] Filename to save file
   def download_file(uri, path)

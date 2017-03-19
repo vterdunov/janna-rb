@@ -1,5 +1,7 @@
 require_relative '../services/providers/rbvmomi_wrapper'
 
+# @abstract Subclass and override {#do_work} to implement
+#   a custom Worker class.
 class AbstractWorker
   include Sidekiq::Worker
   sidekiq_options retry: false
@@ -23,7 +25,7 @@ class AbstractWorker
   protected
 
   def do_work(_args)
-    raise('Not implemented')
+    raise NotImplementedError
   end
 
   def catching(error)

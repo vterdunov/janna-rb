@@ -3,6 +3,7 @@ require_relative '../workers/vmware/deploy_ova'
 require_relative '../workers/vmware/destroy_vm'
 require_relative '../workers/vmware/deploy_template'
 require_relative '../services/providers/vmware/vm_ip'
+require_relative '../services/providers/vmware/lease_tool'
 
 Dummy = Struct.new(:perform_async, :new) do
   def perform_async(*args); end
@@ -12,10 +13,11 @@ end
 
 module RestHelper
   PROVIDER_TYPES = {
-    ['vmware', 'post',   '/v1/vm']       => VMwareDeployOVA,
-    ['vmware', 'delete', '/v1/vm']       => VMwareDestroyVM,
-    ['vmware', 'get',    '/v1/vm']       => VMwareIP,
-    ['vmware', 'post',   '/v1/template'] => VMwareDeployTemplate
+    ['vmware', 'post',   '/v1/vm']            => VMwareDeployOVA,
+    ['vmware', 'delete', '/v1/vm']            => VMwareDestroyVM,
+    ['vmware', 'get',    '/v1/vm']            => VMwareIP,
+    ['vmware', 'post',   '/v1/template']      => VMwareDeployTemplate,
+    ['vmware', 'get',    '/v1/lease/expired'] => Lease
   }
 
   def provider_worker
@@ -24,9 +26,9 @@ module RestHelper
 
   # @return [Hash] params for executor-object
   def vm_params
-    custom = params.each_with_object({}) do |(key, value), result|
+    user_params = params.each_with_object({}) do |(key, value), result|
       result[key.to_sym] = value.strip
     end
-    $default_vm_params.merge(custom)
+    $default_vm_params.merge(user_params)
   end
 end

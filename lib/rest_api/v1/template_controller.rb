@@ -1,17 +1,17 @@
 class ApplicationController
-
   # Create VM from Template
   #
-  # @param provider_type [String] *Required Hypervisor provider type. Possible values: `vmware`
-  # @param vmname  [String] *Required Virtual Machine name
-  # @param template_name [String] *Required Template name
-  # @param template_path [String] *Optional Path to Templates folder
-  # @param network [String] *Optional Network name
-  # @param datacenter [String] *Optional Datacenter name
-  # @param datastore [String] *Optional Datastore name
-  # @param cluster [String] *Optional Cluster name
-  # @param vm_folder [String] *Optional Folder name where VM will be created
-  # @param message_to [String] *Optional Name or Channel to send messages
+  # @param [Hash] opts the options to create VM from Template
+  # @option params [String] :provider_type  *Required Hypervisor provider type. Possible values: `vmware`
+  # @option params [String] :vmname         *Required Virtual Machine name
+  # @option params [String] :template_name  *Required Template name
+  # @option params [String] :template_path  *Optional Path to Templates folder
+  # @option params [String] :network        *Optional Network name
+  # @option params [String] :datacenter     *Optional Datacenter name
+  # @option params [String] :datastore      *Optional Datastore name
+  # @option params [String] :cluster        *Optional Cluster name
+  # @option params [String] :vm_folder      *Optional Folder name where VM will be created
+  # @option params [String] :message_to     *Optional Name or Channel to send messages
   #
   # @return 202 Accepted. Deploy VM in progress.
   post '/v1/template' do

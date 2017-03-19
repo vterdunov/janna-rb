@@ -20,3 +20,6 @@ test-no-tty:
 
 pull:
 	docker-compose -f docker-compose.dev.yml pull
+
+clean-data:
+	docker-compose -f docker-compose.dev.yml down
