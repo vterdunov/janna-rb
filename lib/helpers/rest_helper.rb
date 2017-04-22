@@ -3,6 +3,7 @@ require_relative '../workers/vmware/deploy_ova'
 require_relative '../workers/vmware/destroy_vm'
 require_relative '../workers/vmware/deploy_template'
 require_relative '../services/providers/vmware/vm_ip'
+require_relative '../services/providers/vmware/power_mgmt_vm'
 
 Dummy = Struct.new(:perform_async, :new) do
   def perform_async(*args); end
@@ -14,6 +15,7 @@ module RestHelper
   PROVIDER_TYPES = {
     ['vmware', 'post',   '/v1/vm']       => VMwareDeployOVA,
     ['vmware', 'delete', '/v1/vm']       => VMwareDestroyVM,
+    ['vmware', 'put',    '/v1/vm']       => VMwarePowerVM,
     ['vmware', 'get',    '/v1/vm']       => VMwareIP,
     ['vmware', 'post',   '/v1/template'] => VMwareDeployTemplate
   }
