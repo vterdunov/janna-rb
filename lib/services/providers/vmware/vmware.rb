@@ -51,8 +51,8 @@ class VMware
 
   def destroy_vm
     $logger.info { 'Start destroy VM from VMware' }
-    dc           = datacenter
-    vm           = getting_vm(dc, vm_name) || raise("ERROR: VM `#{vm_name}` not found.")
+    dc = datacenter
+    vm = getting_vm(dc, vm_name) || raise("ERROR: VM `#{vm_name}` not found.")
     begin
       vm.PowerOffVM_Task.wait_for_completion
     rescue RbVmomi::Fault

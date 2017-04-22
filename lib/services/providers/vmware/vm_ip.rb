@@ -11,15 +11,19 @@ class VMwareIP
     @opts      = opts
   end
 
-  # return [Array] Array of VM IP addresss
+  # return [Hash] Hash of VM NIC and IP addresss.
   def vm_ip
     $logger.info { 'Get VM IP addresses' }
-    addresses = {}
+    res = {}
     dc = RbvmomiWrapper.datacenter(opts)
-    vm = dc.find_vm("#{vm_folder}/#{vm_name}") || abort('VM not found')
-    vm.guest.net.each_index do |i|
-      puts addresses["nic#{i}"] = vm.guest.net[i].ipAddress
+    unless vm = dc.find_vm("#{vm_folder}/#{vm_name}")
+      res[:status] = 'error'
+      res[:error] = 'VM not found'
+      return res
     end
-    addresses
+    vm.guest.net.each_index do |i|
+      puts res["nic#{i}"] = vm.guest.net[i].ipAddress
+    end
+    res
   end
 end

@@ -1,7 +1,7 @@
 class ApplicationController
   # Create VM from OVA file
   #
-  # @param provider_type [String] *Required Hypervisor provider type. Possible values: `vmware`
+  # @param provider_type [String] *Required Hypervisor provider type. Values: `vmware`
   # @param vmname        [String]    *Required Virtual Machine name
   # @param ova_url       [String]    *Required URL to OVA file
   # @param network       [String]    *Optional Network name
@@ -17,9 +17,23 @@ class ApplicationController
     status 202
   end
 
+  #  VM power management
+  #
+  # @param provider_type [String] *Required Hypervisor provider type. Values: `vmware`
+  # @param vmname        [String] *Required Virtual Machine name. Will be searched on default VM folder
+  # @param state         [String] *Required State of VM. Values: 'on|off|reset|suspend'
+  # @param datacenter    [String] *Optional Datacenter name
+  # @param vm_folder     [String] *Optional Folder name where VM will be created
+  #
+  # @return 200 OK.
+  put '/v1/vm' do
+    content_type :json
+    provider_worker.new(vm_params).power_mgmt_vm.to_json
+  end
+
   # Delete VM
   #
-  # @param provider_type [String] *Required Hypervisor provider type. Possible values: `vmware`
+  # @param provider_type [String] *Required Hypervisor provider type. Values: `vmware`
   # @param vmname        [String]    *Required Virtual Machine name
   #
   # @return 202 Accepted. Destroy VM in progress.
@@ -30,14 +44,14 @@ class ApplicationController
 
   # Get VM IP Address
   #
-  # @param provider_type [String] *Required Hypervisor provider type. Possible values: `vmware`
+  # @param provider_type [String] *Required Hypervisor provider type. Values: `vmware`
   # @param vmname        [String] *Required Virtual Machine name. Will be searched on default VM folder
   # @param datacenter    [String] *Optional Datacenter name
   # @param vm_folder     [String] *Optional Folder name where VM will be created
-  # @param message_to    [String] *Optional Name or Channel to send messages
   #
   # @return 200 OK, [Json] JSON with IP Addresses: {"nic0":["10.10.26.50","fe80::250:56ff:fe85:a155"],"nic1":[],"nic2":[]}
   get '/v1/vm' do
+    content_type :json
     provider_worker.new(vm_params).vm_ip.to_json
   end
 end
