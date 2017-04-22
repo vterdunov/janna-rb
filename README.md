@@ -21,7 +21,7 @@ See [.env](https://github.com/vterdunov/janna/blob/master/.env.example) file.
 | _Parameter_ | _Description_|
 | provider_type | Hypervisor provider type. Values: `vmware` |
 | vmname | Virtual Machine name |
-| state | State of VM. Values: `on|off|reset|suspend` |
+| state | State of VM. Values: `on\|off\|reset\|suspend` |
 | datacenter | (*Optional) Datacenter name |
 | vm_folder | (*Optional) Folder name where VM will be created |
 | **POST /v1/vm** | **Create VM from OVA file** |
