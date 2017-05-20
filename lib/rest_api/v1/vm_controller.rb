@@ -42,16 +42,16 @@ class ApplicationController
     status 202
   end
 
-  # Get VM IP Address
+  # Get Information about Virtual machine
   #
   # @param provider_type [String] *Required Hypervisor provider type. Values: `vmware`
   # @param vmname        [String] *Required Virtual Machine name. Will be searched on default VM folder
   # @param datacenter    [String] *Optional Datacenter name
   # @param vm_folder     [String] *Optional Folder name where VM will be created
   #
-  # @return 200 OK, [Json] JSON with IP Addresses: {"nic0":["10.10.26.50","fe80::250:56ff:fe85:a155"],"nic1":[],"nic2":[]}
+  # @return 200 OK, [Json] JSON with VM information about network and power state.
   get '/v1/vm' do
     content_type :json
-    provider_worker.new(vm_params).vm_ip.to_json
+    provider_worker.new(vm_params).info.to_json
   end
 end
