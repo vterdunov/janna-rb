@@ -15,6 +15,14 @@ class VMwarePower
 
   # return [Hash] Hash of VM power information.
   def info
+    res = {}
+
+    unless vm
+      res[:ok] = false
+      res[:error] = 'VM not found'
+      return res
+    end
+
     vm_runtime = vm.summary.runtime
 
     {
