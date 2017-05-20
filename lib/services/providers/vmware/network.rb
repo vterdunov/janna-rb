@@ -17,12 +17,13 @@ class VMwareNetwork
   def info
     $logger.info { 'Get VM network information' }
     res = {}
-    dc = RbvmomiWrapper.datacenter(opts)
-    unless vm = dc.find_vm("#{vm_folder}/#{vm_name}")
-      res[:status] = 'error'
+
+    unless vm
+      res[:ok] = false
       res[:error] = 'VM not found'
       return res
     end
+
     vm.guest.net.each_index do |i|
       res["network_adapter#{i + 1}"] = {
         ip_address: vm.guest.net[i].ipAddress,
@@ -33,5 +34,15 @@ class VMwareNetwork
       }
     end
     res
+  end
+
+  private
+
+  def vm
+    dc.find_vm("#{vm_folder}/#{vm_name}")
+  end
+
+  def dc
+    RbvmomiWrapper.datacenter(opts)
   end
 end
