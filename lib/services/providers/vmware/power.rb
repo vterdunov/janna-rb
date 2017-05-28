@@ -5,7 +5,6 @@ require_relative '../rbvmomi_wrapper'
 
 # Provides VM power management
 class VMwarePower
-  # include RbvmomiWrapper
   attr_reader :opts, :vm
 
   def initialize(opts)
