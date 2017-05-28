@@ -5,26 +5,15 @@ require_relative '../rbvmomi_wrapper'
 
 # Provides VM power management
 class VMwarePower
-  attr_reader :vm_name, :vm_folder, :opts, :dc, :vm
+  attr_reader :opts, :vm
 
   def initialize(opts)
-    @vm_name   = opts[:vmname]
-    @vm_folder = opts[:vm_folder_path]
-    @opts      = opts
+    @opts = opts
   end
 
   # return [Hash] Hash of VM power information.
   def info
-    res = {}
-
-    unless vm
-      res[:ok] = false
-      res[:error] = 'VM not found'
-      return res
-    end
-
     vm_runtime = vm.summary.runtime
-
     {
       state: vm_runtime.powerState,
       boot_time: vm_runtime.bootTime,
@@ -35,12 +24,6 @@ class VMwarePower
   # return [Hash] Hash of changed VM power state.
   def power_mgmt_vm
     res = {}
-
-    unless vm
-      res[:ok] = false
-      res[:error] = 'VM not found'
-      return res
-    end
 
     $logger.info { "Start change the VM state to: #{opts[:state]}" }
     case opts[:state]
@@ -85,15 +68,17 @@ class VMwarePower
     res[:ok] = true
     res[:state] = opts[:state]
     res
+  rescue RuntimeError => e
+    $logger.error { e.message }
+    $logger.error { e.backtrace.inspect }
+    res[:ok] = false
+    res[:error] = e.message
+    res
   end
 
   private
 
   def vm
-    dc.find_vm("#{vm_folder}/#{vm_name}")
-  end
-
-  def dc
-    RbvmomiWrapper.datacenter(opts)
+    RbvmomiWrapper.vm(opts)
   end
 end

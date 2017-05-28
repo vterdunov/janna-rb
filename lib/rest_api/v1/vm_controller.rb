@@ -13,7 +13,7 @@ class ApplicationController
   #
   # @return 202 Accepted. Deploy VM in progress.
   post '/v1/vm' do
-    provider_worker.perform_async(vm_params)
+    rest_router.perform_async(vm_params)
     status 202
   end
 
@@ -28,7 +28,7 @@ class ApplicationController
   # @return 200 OK.
   put '/v1/vm' do
     content_type :json
-    provider_worker.new(vm_params).power_mgmt_vm.to_json
+    rest_router.new(vm_params).power_mgmt_vm.to_json
   end
 
   # Delete VM
@@ -38,7 +38,7 @@ class ApplicationController
   #
   # @return 202 Accepted. Destroy VM in progress.
   delete '/v1/vm' do
-    provider_worker.perform_async(vm_params)
+    rest_router.perform_async(vm_params)
     status 202
   end
 
@@ -52,6 +52,6 @@ class ApplicationController
   # @return 200 OK, [Json] JSON with VM information about network and power state.
   get '/v1/vm' do
     content_type :json
-    provider_worker.new(vm_params).info.to_json
+    rest_router.new(vm_params).info.to_json
   end
 end

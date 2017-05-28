@@ -15,7 +15,7 @@ class ApplicationController
   #
   # @return 202 Accepted. Deploy VM in progress.
   post '/v1/template' do
-    provider_worker.perform_async(vm_params)
+    rest_router.perform_async(vm_params)
     status 202
   end
 end
