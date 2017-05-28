@@ -4,12 +4,10 @@ require_relative '../rbvmomi_wrapper'
 
 # Provides VM network information
 class VMwareNetwork
-  attr_reader :vm_name, :vm_folder, :opts
+  attr_reader :opts, :vm
 
   def initialize(opts)
-    @vm_name   = opts[:vmname]
-    @vm_folder = opts[:vm_folder_path]
-    @opts      = opts
+    @opts = opts
   end
 
   # return [Hash] Hash of VM network information:
@@ -18,31 +16,23 @@ class VMwareNetwork
     $logger.info { 'Get VM network information' }
     res = {}
 
-    unless vm
-      res[:ok] = false
-      res[:error] = 'VM not found'
-      return res
-    end
-
-    vm.guest.net.each_index do |i|
+    vm_networks = vm.guest.net
+    vm_networks.each_index do |i|
       res["network_adapter#{i + 1}"] = {
-        ip_address: vm.guest.net[i].ipAddress,
-        network: vm.guest.net[i].network,
-        connected: vm.guest.net[i].connected,
-        device_config_id: vm.guest.net[i].deviceConfigId,
-        mac_address: vm.guest.net[i].macAddress
+        ip_address: vm_networks[i].ipAddress,
+        network: vm_networks[i].network,
+        connected: vm_networks[i].connected,
+        device_config_id: vm_networks[i].deviceConfigId,
+        mac_address: vm_networks[i].macAddress
       }
     end
+
     res
   end
 
   private
 
   def vm
-    dc.find_vm("#{vm_folder}/#{vm_name}")
-  end
-
-  def dc
-    RbvmomiWrapper.datacenter(opts)
+    RbvmomiWrapper.vm(opts)
   end
 end
