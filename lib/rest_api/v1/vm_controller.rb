@@ -23,7 +23,7 @@ class ApplicationController
   # @param vmname        [String] *Required Virtual Machine name. Will be searched on default VM folder
   # @param state         [String] *Required State of VM. Values: 'on|off|reset|suspend'
   # @param datacenter    [String] *Optional Datacenter name
-  # @param vm_folder     [String] *Optional Folder name where VM will be created
+  # @param vm_folder     [String] *Optional Folder name where VM placed
   #
   # @return 200 OK.
   put '/v1/vm' do
@@ -34,7 +34,7 @@ class ApplicationController
   # Delete VM
   #
   # @param provider_type [String] *Required Hypervisor provider type. Values: `vmware`
-  # @param vmname        [String]    *Required Virtual Machine name
+  # @param vmname        [String] *Required Virtual Machine name
   #
   # @return 202 Accepted. Destroy VM in progress.
   delete '/v1/vm' do
@@ -47,7 +47,7 @@ class ApplicationController
   # @param provider_type [String] *Required Hypervisor provider type. Values: `vmware`
   # @param vmname        [String] *Required Virtual Machine name. Will be searched on default VM folder
   # @param datacenter    [String] *Optional Datacenter name
-  # @param vm_folder     [String] *Optional Folder name where VM will be created
+  # @param vm_folder     [String] *Optional Folder name where VM placed
   #
   # @return 200 OK, [Json] JSON with VM information about network and power state.
   get '/v1/vm' do

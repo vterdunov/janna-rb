@@ -1,6 +1,7 @@
 # Janna
-This application will deploy your VM on VMware from OVA file or Template.  
-Janna will sent you slack notification when your Virtual machine will be ready.
+Janna is a little REST API interface for VMware.  
+Janna can deploy your VM from OVA file or Template and send notification into Slack when your Virtual machine will be ready.  
+Also Janna can destroy VMs, show information about VMs or change their power state.  
 
 ### Configuration
 See [.env](https://github.com/vterdunov/janna/blob/master/.env.example) file.
@@ -10,12 +11,12 @@ See [.env](https://github.com/vterdunov/janna/blob/master/.env.example) file.
 | ---- | --------------- |
 | **GET /health** | **Check application health. Return 200 OK.** |
 |  |  |
-| **GET /v1/vm** | **Get VM IP Address** |
+| **GET /v1/vm** | **Get Information about Virtual machine** |
 | _Parameter_ | _Description_|
 | provider_type | Hypervisor provider type. Values: `vmware` |
 | vmname | Virtual Machine name |
 | datacenter | (*Optional) Datacenter name |
-| vm_folder | (*Optional) Folder name where VM will be created |
+| vm_folder | (*Optional) Folder name where VM placed |
 |||
 | **PUT /v1/vm** | **Change VM Power state** |
 | _Parameter_ | _Description_|
@@ -23,7 +24,7 @@ See [.env](https://github.com/vterdunov/janna/blob/master/.env.example) file.
 | vmname | Virtual Machine name |
 | state | State of VM. Values: `on\|off\|reset\|suspend` |
 | datacenter | (*Optional) Datacenter name |
-| vm_folder | (*Optional) Folder name where VM will be created |
+| vm_folder | (*Optional) Folder name where VM placed |
 | **POST /v1/vm** | **Create VM from OVA file** |
 | _Parameter_ | _Description_|
 | provider_type | Hypervisor provider type. Values: `vmware` |
