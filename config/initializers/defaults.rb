@@ -7,7 +7,7 @@ $default_vm_params = {
   datastore:      ENV['VSPHERE_DATASTORE'],
   computer_path:  ENV['VSPHERE_CLUSTER'],
   network:        ENV['VSPHERE_NETWORK'],
-  vm_folder_path: ENV['VSPHERE_VM_FOLDER'],
+  vm_folder:      ENV['VSPHERE_VM_FOLDER'],
   template_path:  ENV['VSPHERE_TEMPLATE_PATH'],
   path:           '/sdk',
   insecure:       true,

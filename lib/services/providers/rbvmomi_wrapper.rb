@@ -15,7 +15,7 @@ module RbvmomiWrapper
 
     def vm(opts)
       $logger.debug { 'Get Virtual Machine' }
-      vm = datacenter(opts).find_vm("#{opts[:vm_folder_path]}/#{opts[:vmname]}")
+      vm = datacenter(opts).find_vm("#{opts[:vm_folder]}/#{opts[:vmname]}")
       raise 'VM not found' if vm.blank?
       vm
     end
@@ -66,7 +66,7 @@ module RbvmomiWrapper
   # @option opts [String] :insecure
   # @option opts [String] :ssl
   # @option opts [String] :debug
-  # @option opts [String] :vm_folder_path
+  # @option opts [String] :vm_folder
   # @option opts [String] :vmname
   #
   # return [VirtualMachine] VMware Virtual machine object
