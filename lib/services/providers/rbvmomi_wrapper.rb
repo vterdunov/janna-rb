@@ -4,8 +4,8 @@ module RbvmomiWrapper
   # Helper class
   class Helper
     def vim(opts)
-    $logger.debug { 'Get Virtualized Infrastructure Manager' }
-    RbVmomi::VIM.connect opts
+      $logger.debug { 'Get Virtualized Infrastructure Manager' }
+      RbVmomi::VIM.connect opts
     end
 
     def datacenter(opts)
