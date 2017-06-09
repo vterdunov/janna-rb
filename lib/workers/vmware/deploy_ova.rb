@@ -5,7 +5,6 @@ require_relative '../../services/providers/vmware/vmware'
 
 class VMwareDeployOVA < AbstractWorker
   def do_work(vim, datacenter, params)
-    puts params
     $slacker.notify("Start deploy VM: `#{params[:vmname]}`", to: params[:message_to])
     raise "ERROR: VM `#{params[:vmname]}` already exists." if VMware.new(vim, datacenter, params).vm_exist?
     ova_path = Downloader.new(params[:ova_url]).download
