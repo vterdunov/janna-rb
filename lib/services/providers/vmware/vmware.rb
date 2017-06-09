@@ -35,7 +35,7 @@ class VMware
     computer        = scheduler.pick_computer
     network         = computer.network.find { |x| x.name == opts[:network] }
     root_vm_folder  = dc.vmFolder
-    template_folder = root_vm_folder.traverse!(opts[:vm_folder_path], VIM::Folder)
+    template_folder = root_vm_folder.traverse!(opts[:vm_folder], VIM::Folder)
 
     deployer = CachedOvfDeployer.new(
       vim, network, computer, template_folder, vm_folder, datastore
@@ -68,8 +68,7 @@ class VMware
 
   def vm_exist?
     $logger.info { 'Check if VM already exists' }
-    dc = datacenter
-    getting_vm(dc, vm_name)
+    getting_vm(datacenter, vm_name)
   end
 
   private
@@ -129,7 +128,7 @@ class VMware
 
   def get_vm_folder(dc)
     $logger.debug { 'Get VM folder' }
-    dc.vmFolder.traverse(opts[:vm_folder_path], VIM::Folder)
+    dc.vmFolder.traverse(opts[:vm_folder], VIM::Folder)
   end
 
   def create_scheduler(vim, dc, vm_folder)
@@ -147,7 +146,7 @@ class VMware
   end
 
   def getting_vm(datacenter, vm_name)
-    vm_full_path = opts[:vm_folder_path] + '/' + vm_name
+    vm_full_path = opts[:vm_folder] + '/' + vm_name
     datacenter.vmFolder.traverse(vm_full_path, VIM::VirtualMachine)
   end
 

@@ -10,7 +10,7 @@ datacenter:     host
 datastore:      host
 computer_path:  host
 network:        host
-vm_folder_path: host
+vm_folder:      host
 template_path:  host
 path:           /sdk
 insecure:       true
