@@ -1,26 +1,21 @@
+ENV['SINATRA_ENV'] = 'test'
+
+require_relative '../config/environment'
 require 'rack/test'
-require 'rspec'
-require 'webmock/rspec'
-require 'sidekiq/testing'
-require 'byebug'
+require 'capybara/rspec'
+require 'capybara/dsl'
 
-WebMock.disable_net_connect!(allow_localhost: true)
+RSpec.configure do |config|
+  config.run_all_when_everything_filtered = true
+  config.filter_run :focus
+  config.include Rack::Test::Methods
+  config.include Capybara::DSL
 
-ENV['RACK_ENV'] = 'test'
-
-require File.expand_path '../../janna.rb', __FILE__
-
-$logger.level = :fatal
-
-FIXTURES_PATH = File.absolute_path("#{__dir__}/fixtures")
-
-Dir["#{__dir__}/support/**/*.rb"].each { |s| require s }
-
-module RSpecMixin
-  include Rack::Test::Methods
-  def app
-    ApplicationController
-  end
+  config.order = 'default'
 end
 
-RSpec.configure { |c| c.include RSpecMixin }
+def app
+  Rack::Builder.parse_file('config.ru').first
+end
+
+Capybara.app = app

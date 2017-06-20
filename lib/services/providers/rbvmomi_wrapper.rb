@@ -1,7 +1,6 @@
-require 'rbvmomi'
-
 module RbvmomiWrapper
   # Helper class
+  # @private
   class Helper
     def vim(opts)
       $logger.debug { 'Get Virtualized Infrastructure Manager' }
@@ -33,7 +32,7 @@ module RbvmomiWrapper
   # @option opts [String] :ssl
   # @option opts [String] :debug
   #
-  # return [RbVmomi::VIM]
+  # @return [RbVmomi::VIM]
   def self.vim(opts)
     Helper.new.vim(opts)
   end
@@ -50,7 +49,7 @@ module RbvmomiWrapper
   # @option opts [String] :ssl
   # @option opts [String] :debug
   #
-  # return [Datacenter] VMware datastore
+  # @return [Datacenter] VMware datastore
   def self.datacenter(opts)
     Helper.new.datacenter(opts)
   end
@@ -69,7 +68,7 @@ module RbvmomiWrapper
   # @option opts [String] :vm_folder
   # @option opts [String] :vmname
   #
-  # return [VirtualMachine] VMware Virtual machine object
+  # @return [VirtualMachine] VMware Virtual machine object
   def self.vm(opts)
     Helper.new.vm(opts)
   end

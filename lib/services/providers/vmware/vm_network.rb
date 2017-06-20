@@ -3,7 +3,7 @@ require 'yaml'
 require_relative '../rbvmomi_wrapper'
 
 # Provides VM network information
-class VMwareNetwork
+class VMwareVMNetwork
   attr_reader :opts, :vm
 
   def initialize(opts)
@@ -27,7 +27,10 @@ class VMwareNetwork
       }
     end
 
+    res[:guest_ip] = vm.guest_ip
     res
+  rescue
+    {}
   end
 
   private
