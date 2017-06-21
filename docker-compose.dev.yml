@@ -12,7 +12,6 @@ services:
 
   api:
     build: .
-    command: rackup -s puma --host 0.0.0.0 -p 4567 config.ru
     env_file: .env.local
     volumes:
       - '.:/usr/src'
@@ -20,24 +19,24 @@ services:
       - '4567:4567'
     environment:
       RACK_ENV: development
-    dns:
-      - 10.0.0.10
-      - 8.8.8.8
+    # dns:
+    #   - 10.0.0.10
+    #   - 8.8.8.8
     depends_on:
       - 'redis'
 
   worker:
     build: .
-    command: bundle exec sidekiq -r ./janna.rb
+    command: bundle exec sidekiq -r ./config/environment.rb
     env_file: .env.local
     volumes:
       - '.:/usr/src'
       - 'data:/data'
     environment:
       RACK_ENV: development
-    dns:
-      - 10.0.0.10
-      - 8.8.8.8
+    # dns:
+    #   - 10.0.0.10
+    #   - 8.8.8.8
     depends_on:
       - 'redis'
       - 'api'

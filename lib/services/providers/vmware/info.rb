@@ -1,8 +1,8 @@
 require 'rbvmomi'
 require 'yaml'
 require_relative '../rbvmomi_wrapper'
-require_relative './network'
-require_relative './power'
+require_relative './vm_network'
+require_relative './vm_power'
 require_relative './vm_config'
 
 # Provides some info about Virtual machine (power state, network interfaces)
@@ -14,10 +14,15 @@ class VMwareVMInfo
   end
 
   def info
+    $logger.info { 'Get VM info' }
     res = {}
-    res[:network] = network
-    res[:power]   = power
-    res = res.merge(vm_config)
+    network = vm_network
+    power   = vm_power
+    config  = vm_config
+
+    res[:network] = network unless network.blank?
+    res[:power]   = power unless power.blank?
+    res = res.merge(config) unless config.blank?
     res
   rescue RuntimeError => e
     $logger.error { e.message }
@@ -29,12 +34,12 @@ class VMwareVMInfo
 
   private
 
-  def network
-    VMwareNetwork.new(opts).info
+  def vm_network
+    VMwareVMNetwork.new(opts).info
   end
 
-  def power
-    VMwarePower.new(opts).info
+  def vm_power
+    VMwareVMPower.new(opts).info
   end
 
   def vm_config

@@ -1,4 +1,5 @@
 SHELL:=/bin/bash
+.PHONY: doc
 
 build:
 	docker build -t janna .
@@ -20,3 +21,11 @@ test-no-tty:
 
 pull:
 	docker-compose -f docker-compose.dev.yml pull
+
+doc-api:
+	@docker-compose -f docker-compose.dev.yml exec api rm -rf doc/api
+	@docker-compose -f docker-compose.dev.yml exec api yard -o doc/api app/controller/api/
+
+doc:
+	@docker-compose -f docker-compose.dev.yml exec api rm -rf doc/janna
+	@docker-compose -f docker-compose.dev.yml exec api yard doc -o doc/jana

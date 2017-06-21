@@ -1,14 +1,11 @@
-require 'sinatra/base'
-require 'redis'
-require "#{$root}/lib/helpers/rest_helper"
+require_all 'app/helpers'
 
 class ApplicationController < Sinatra::Base
   configure do
     set :bind, '0.0.0.0'
-    REDIS = Redis.new(url: ENV['REDIS_URI'])
-  end
+    set :public_folder, 'public'
+    set :views, 'app/views'
 
-  helpers do
-    include RestHelper
+    helpers RestHelper
   end
 end

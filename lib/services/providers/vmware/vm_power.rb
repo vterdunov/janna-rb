@@ -4,7 +4,7 @@ require 'date'
 require_relative '../rbvmomi_wrapper'
 
 # Provides VM power management
-class VMwarePower
+class VMwareVMPower
   attr_reader :opts, :vm
 
   def initialize(opts)

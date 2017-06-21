@@ -18,6 +18,8 @@ class VMwareVMConfig
       uuid: vm_config.uuid,
       instance_uuid: vm_config.instanceUuid
     }
+  rescue
+    {}
   end
 
   private

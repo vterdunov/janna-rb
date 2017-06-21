@@ -8,9 +8,7 @@ ARG PACKAGES=' \
     curl \
     libxml2-dev \
     libxslt-dev \
-    libffi-dev \
-    sqlite \
-    sqlite-dev'
+    libffi-dev'
 
 RUN apk add --no-cache --update $PACKAGES && \
     rm -rf /var/cache/apk/*
@@ -22,4 +20,5 @@ RUN bundle install --jobs=4 --retry=4
 
 COPY . $APP_HOME
 
-CMD ["rackup", "-s", "puma", "--host", "0.0.0.0.", "-p", "4567", "config.ru"]
+ENTRYPOINT ["bundle", "exec"]
+CMD ["shotgun", "--server", "puma", "--host", "0.0.0.0", "--port", "4567"]

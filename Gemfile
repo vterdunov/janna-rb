@@ -3,29 +3,27 @@ source 'https://rubygems.org'
 gem 'activesupport'
 gem 'bundler'
 gem 'dotenv'
+gem 'sinatra'
 gem 'rbvmomi'
 gem 'sidekiq'
-gem 'sinatra'
+gem 'sidekiq-status'
+gem 'rake'
+gem 'require_all'
+gem 'shotgun'
+gem 'pry'
+gem 'bcrypt'
 gem 'slack-notifier'
+gem 'tux'
+gem 'puma'
+
+group :test do
+  gem 'rspec'
+  gem 'capybara'
+  gem 'rack-test'
+end
 
 group :development do
   gem 'byebug'
-  gem 'shotgun'
   gem 'yard'
   gem 'yard-sinatra'
-end
-
-group :test, :development do
-  gem 'sqlite3'
-end
-
-group :test do
-  gem 'rack-test'
-  gem 'rspec'
-  gem 'rspec-sidekiq'
-  gem 'webmock'
-end
-
-group :production do
-  gem 'puma'
 end

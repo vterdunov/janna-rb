@@ -10,7 +10,7 @@ services:
 
   api:
     image: janna:latest
-    command: rackup -s puma --host 0.0.0.0 -p 4567 config.ru
+    command: rackup --server puma --host 0.0.0.0 --port 4567 config.ru
     restart: unless-stopped
     env_file: .env
     ports:
@@ -22,7 +22,7 @@ services:
 
   worker:
     image: janna:latest
-    command: bundle exec sidekiq -r ./janna.rb
+    command: sidekiq -r ./janna.rb
     restart: unless-stopped
     env_file: .env
     volumes:
