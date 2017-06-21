@@ -8,7 +8,8 @@ module RestHelper
     ['vmware', 'delete', '/v1/vm']       => VMwareDestroyVM,
     ['vmware', 'put',    '/v1/vm']       => VMwareVMPower,
     ['vmware', 'get',    '/v1/vm']       => VMwareVMInfo,
-    ['vmware', 'post',   '/v1/template'] => VMwareDeployTemplate
+    ['vmware', 'post',   '/v1/template'] => VMwareDeployTemplate,
+    ['vmware', 'get',    '/v1/jobs']     => JobsStatus
   }.freeze
 
   def rest_router
