@@ -47,6 +47,7 @@ See [.env](https://github.com/vterdunov/janna/blob/master/.env.example) file.
 | provider_type | Hypervisor provider type. Values: `vmware` |
 | vmname | Virtual Machine name |
 | template_name | Name of Template |
+| template_path | Path to Templates folder |
 | network | (*Optional) Network name |
 | datacenter | (*Optional) Datacenter name |
 | datastore | (*Optional) Datastore name |
