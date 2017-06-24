@@ -29,16 +29,18 @@ class JobsStatus
   end
 
   # @param [String] Job ID
-  # @return [Hash]  Job status by ID.
+  # @return [Hash]  Job status and stage by ID.
   def job_status(job_id)
     job = {}
-    # :queued, :working, :complete, :failed or :interrupted, nil after expiry (30 minutes)
+    # :queued, :working, :complete, :failed or :interrupted, nil after expiry
     status = Sidekiq::Status.status(job_id)
     job[:status] = if status.nil?
                       'Unknown status. Job expired or never existed.'
                    else
                      status
                    end
+    stage = Sidekiq::Status.get(job_id, :stage)
+    job[:stage] = stage
     job[:ok] = true
     job
   rescue RuntimeError => e

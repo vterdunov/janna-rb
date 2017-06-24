@@ -18,14 +18,7 @@ class VMware
     @opts          = opts
   end
 
-  def deploy_ova
-    $logger.info { 'Start deploy VM from OVA to VMware' }
-    vm = create_vm
-    powerup_vm(vm)
-  end
-
   def deploy_from_template
-    $logger.info { 'Start deploy VM from Template to VMware' }
     dc = datacenter
     vm_folder = get_vm_folder(dc)
     scheduler = create_scheduler(vim, dc, vm_folder)
@@ -44,9 +37,7 @@ class VMware
     (template = vim.serviceInstance.find_datacenter.find_vm("#{opts[:template_path]}/#{template_name}")) ||
       abort('Template Not Found!')
     config = {}
-    vm = deployer.linked_clone template, vm_name, config
-
-    powerup_vm(vm)
+    deployer.linked_clone(template, vm_name, config)
   end
 
   def destroy_vm
@@ -71,7 +62,19 @@ class VMware
     getting_vm(datacenter, vm_name)
   end
 
-  private
+  def powerup_vm(vm)
+    $logger.info 'Powering On VM...'
+    vm.PowerOnVM_Task.wait_for_completion
+
+    until (ip = vm.guest_ip)
+      sleep 5
+      $logger.info 'Waiting for VM to be up...'
+    end
+
+    $logger.info "VM got IP: #{ip}"
+
+    ip
+  end
 
   def create_vm
     dc        = datacenter
@@ -126,6 +129,8 @@ class VMware
     ovf_deploy(params)
   end
 
+  private
+
   def get_vm_folder(dc)
     $logger.debug { 'Get VM folder' }
     dc.vmFolder.traverse(opts[:vm_folder], VIM::Folder)
@@ -173,19 +178,5 @@ class VMware
     $logger.error { e.message }
     $logger.error { e.backtrace.inspect }
     raise "ERROR: #{e.message}"
-  end
-
-  def powerup_vm(vm)
-    $logger.info 'Powering On VM...'
-    vm.PowerOnVM_Task.wait_for_completion
-
-    until (ip = vm.guest_ip)
-      sleep 5
-      $logger.info 'Waiting for VM to be up...'
-    end
-
-    $logger.info "VM got IP: #{ip}"
-
-    ip
   end
 end
