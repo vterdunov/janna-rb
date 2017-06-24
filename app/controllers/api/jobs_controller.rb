@@ -21,6 +21,7 @@ class JobsController < ApplicationController
   # @return [json] Background job by ID.
   get '/v1/jobs/:id' do
     content_type :json
-    rest_router.new(vm_params).job_status.to_json
+    job = JobsStatus.new(vm_params)
+    job.job_status(params[:id]).to_json
   end
 end
