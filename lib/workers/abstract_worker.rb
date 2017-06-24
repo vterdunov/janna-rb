@@ -2,6 +2,8 @@ require_relative '../services/providers/rbvmomi_wrapper'
 
 class AbstractWorker
   include Sidekiq::Worker
+  include Sidekiq::Status::Worker
+
   sidekiq_options retry: false
   attr_reader :args
 
