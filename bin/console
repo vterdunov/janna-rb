@@ -2,6 +2,6 @@
 
 require 'irb'
 require 'irb/completion'
-require "#{__dir__}/../janna.rb"
+require "#{__dir__}/../config/environment.rb"
 
 IRB.start
