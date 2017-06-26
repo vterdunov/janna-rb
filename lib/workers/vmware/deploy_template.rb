@@ -5,8 +5,6 @@ class VMwareDeployTemplate < AbstractWorker
   def do_work(vim, datacenter, params)
     $logger.info { "Start deploy VM from Template to VMware, vmname: #{params[:vmname]}" }
     store stage: 'strating'
-    $slacker.notify("Start deploy VM: `#{params[:vmname]}` from template: `#{params[:template_name]}`",
-                    to: params[:message_to])
     raise "ERROR: VM `#{params[:vmname]}` already exists." if VMware.new(vim, datacenter, params).vm_exist?
     store stage: 'creating vm'
     vm = VMware.new(vim, datacenter, params).deploy_from_template

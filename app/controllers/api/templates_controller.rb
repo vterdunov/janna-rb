@@ -17,6 +17,9 @@ class TemplatesController < ApplicationController
   post '/v1/template' do
     content_type :json
     job_id = rest_router.perform_async(vm_params)
+    $slacker.notify("Start deploy VM: `#{vm_params[:vmname]}` from template: `#{vm_params[:template_name]}`",
+                    to: vm_params[:message_to],
+                    footer: "JID: #{job_id}")
     status 202
     { ok: true, job_id: job_id }.to_json
   end

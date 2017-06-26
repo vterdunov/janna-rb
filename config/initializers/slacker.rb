@@ -23,8 +23,8 @@ class Slacker
 
   # Sends notification to slack
   # @param msg [Hash] The hash of parameters to send
-  def notify(text, to: nil, level: 'info')
-    attachment = { text: text, color: COLOR[level], mrkdwn_in: ['text'] }
+  def notify(text, to: nil, level: 'info', footer: nil)
+    attachment = { text: text, color: COLOR[level], footer: footer, mrkdwn_in: ['text'] }
     sender(to).post(attachments: [attachment])
   end
 
