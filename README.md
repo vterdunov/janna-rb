@@ -9,8 +9,6 @@ See [.env](https://github.com/vterdunov/janna/blob/master/.env.example) file.
 ### API
 | Endpoint | Description |
 | ---- | --------------- |
-| **GET /health** | **Check application health. Return 200 OK.** |
-|  |  |
 | **GET /v1/vm** | **Get Information about Virtual machine** |
 | _Parameter_ | _Description_|
 | provider_type | Hypervisor provider type. Values: `vmware` |
@@ -54,7 +52,11 @@ See [.env](https://github.com/vterdunov/janna/blob/master/.env.example) file.
 | cluster | (*Optional) Cluster name |
 | vm_folder | (*Optional) Folder name where VM will be created |
 | message_to | (*Optional) Name or Channel to send messages |
-
+|  |  |
+| **GET /health** | **Check application health. Return 200 OK.** |
+|  |  |
+| **GET /v1/jobs** | **Get list of background jobs** |
+| **GET /v1/jobs/:id** | **Get background job info by ID** |
 
 ##### Pre-requirements
 Docker and docker-compose needs to be installed.
