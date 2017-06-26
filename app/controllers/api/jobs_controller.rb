@@ -11,7 +11,7 @@ class JobsController < ApplicationController
     rest_router.new(vm_params).job_list.to_json
   end
 
-  # Get background job status
+  # Get background job info by ID
   #
   # @param opts Request body.
   # @option opts [String] :provider_type +Required+ Hypervisor provider type. Possible values: `vmware`
