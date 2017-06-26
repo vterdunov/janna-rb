@@ -7,7 +7,6 @@ class VMwareDeployOVA < AbstractWorker
   def do_work(vim, datacenter, params)
     $logger.info { "Start deploy VM from OVA to VMware, vmname: #{params[:vmname]}" }
     store stage: 'strating'
-    $slacker.notify("Start deploy VM: `#{params[:vmname]}`", to: params[:message_to])
     raise "ERROR: VM `#{params[:vmname]}` already exists." if VMware.new(vim, datacenter, params).vm_exist?
     store stage: 'getting OVA'
     ova_path = Downloader.new(params[:ova_url]).download
