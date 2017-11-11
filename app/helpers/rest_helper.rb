@@ -23,6 +23,14 @@ module RestHelper
     custom = params.each_with_object({}) do |(key, value), result|
       result[key.to_sym] = value.strip if value.respond_to?(:strip)
     end
-    $default_vm_params.merge(custom)
+    res_params = $default_vm_params.merge(custom)
+    res_params[:datastores] = string_to_list(res_params[:datastores])
+    res_params
+  end
+
+  # @param [String] Comma separated string
+  # @return [List]
+  def string_to_list(string)
+    string.split(/\s*,\s*/)
   end
 end

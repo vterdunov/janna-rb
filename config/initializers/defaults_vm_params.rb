@@ -4,7 +4,7 @@ $default_vm_params = {
   user:           ENV['VSPHERE_USERNAME'],
   password:       ENV['VSPHERE_PASSWORD'],
   datacenter:     ENV['VSPHERE_DC'],
-  datastore:      ENV['VSPHERE_DATASTORE'],
+  datastores:     ENV['VSPHERE_DATASTORES'],
   computer_path:  ENV['VSPHERE_CLUSTER'],
   network:        ENV['VSPHERE_NETWORK'],
   vm_folder:      ENV['VSPHERE_VM_FOLDER'],

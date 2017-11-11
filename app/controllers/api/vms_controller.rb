@@ -7,7 +7,7 @@ class VmsController < ApplicationController
   # @option opts [String] :ova_url       +Required+ URL to OVA file
   # @option opts [String] :network       +Optional+ Network name
   # @option opts [String] :datacenter    +Optional+ Datacenter name
-  # @option opts [String] :datastore     +Optional+ Datastore name
+  # @option opts [String] :datastores    +Optional+ Datastores names. Comma separated string. E.g.: datastore1, datastore2, datastore3
   # @option opts [String] :cluster       +Optional+ Cluster name
   # @option opts [String] :vm_folder     +Optional+ Folder name where VM will be created
   # @option opts [String] :message_to    +Optional+ Userame or Channel to send messages
