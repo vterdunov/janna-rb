@@ -144,7 +144,7 @@ class VMware
       computer_names: [opts[:computer_path]],
       vm_folder: vm_folder,
       rp_path: '/',
-      datastore_paths: [opts[:datastore]],
+      datastore_paths: opts[:datastores],
       max_vms_per_pod: nil, # No limits
       min_ds_free: nil, # No limits
     )

@@ -8,7 +8,7 @@ class TemplatesController < ApplicationController
   # @option opts [String] :template_path +Optional+ Path to Templates folder
   # @option opts [String] :network  *    +Optional+ Network name
   # @option opts [String] :datacenter    +Optional+ Datacenter name
-  # @option opts [String] :datastore     +Optional+ Datastore name
+  # @option opts [String] :datastores    +Optional+ Datastores names. Comma separated string. E.g.: datastore1, datastore2, datastore3
   # @option opts [String] :cluster       +Optional+ Cluster name
   # @option opts [String] :vm_folder     +Optional+ Folder name where VM will be created
   # @option opts [String] :message_to    +Optional+ Usernaame or Channel to send messages
