@@ -63,15 +63,15 @@ class VMware
   end
 
   def powerup_vm(vm)
-    $logger.info 'Powering On VM...'
+    $logger.info "Powering On VM: #{vm_name}"
     vm.PowerOnVM_Task.wait_for_completion
 
     until (ip = vm.guest_ip)
       sleep 5
-      $logger.info 'Waiting for VM to be up...'
+      $logger.info "#{vm_name}: waiting for VM to be up..."
     end
 
-    $logger.info "VM got IP: #{ip}"
+    $logger.info "#{vm_name}: got IP: #{ip}"
 
     ip
   end
