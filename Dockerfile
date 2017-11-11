@@ -1,6 +1,7 @@
-FROM ruby:2.3-alpine
+FROM ruby:2.4.2-alpine3.6
 
-ENV APP_HOME /usr/src
+ENV LANG C.UTF-8
+ENV APP_HOME /janna
 
 ARG PACKAGES=' \
     ruby-dev \

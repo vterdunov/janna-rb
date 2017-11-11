@@ -5,8 +5,6 @@ services:
   redis:
     image: redis:3.2-alpine
     restart: unless-stopped
-    ports:
-      - '6379:6379'
 
   api:
     image: janna:latest

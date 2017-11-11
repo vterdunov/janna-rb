@@ -14,32 +14,32 @@ services:
     build: .
     env_file: .env.local
     volumes:
-      - '.:/usr/src'
+      - '.:/janna'
     ports:
       - '4567:4567'
     environment:
       RACK_ENV: development
+    depends_on:
+      - 'redis'
     # dns:
     #   - 10.0.0.10
     #   - 8.8.8.8
-    depends_on:
-      - 'redis'
 
   worker:
     build: .
     command: bundle exec sidekiq -r ./config/environment.rb
     env_file: .env.local
     volumes:
-      - '.:/usr/src'
+      - '.:/janna'
       - 'data:/data'
     environment:
       RACK_ENV: development
-    # dns:
-    #   - 10.0.0.10
-    #   - 8.8.8.8
     depends_on:
       - 'redis'
       - 'api'
+    # dns:
+    #   - 10.0.0.10
+    #   - 8.8.8.8
 
 volumes:
   data:
