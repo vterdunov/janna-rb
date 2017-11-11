@@ -49,7 +49,7 @@ module RbvmomiWrapper
   # @option opts [String] :ssl
   # @option opts [String] :debug
   #
-  # @return [Datacenter] VMware datastore
+  # @return [Datacenter] VMware datacenter
   def self.datacenter(opts)
     Helper.new.datacenter(opts)
   end
