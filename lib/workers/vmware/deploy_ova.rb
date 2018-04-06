@@ -1,3 +1,4 @@
+require 'fileutils'
 require_relative '../abstract_worker'
 require_relative '../../services/downloader'
 require_relative '../../services/unpacker'
@@ -21,5 +22,7 @@ class VMwareDeployOVA < AbstractWorker
     $slacker.notify("VM `#{params[:vmname]}` has been deployed. IP: #{ip}",
                     to: params[:message_to],
                     level: 'good')
+  ensure
+    FileUtils.remove_dir(tmp_dir)
   end
 end
