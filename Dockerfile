@@ -1,25 +1,30 @@
-FROM ruby:2.4.2-alpine3.6
+FROM ruby:2.4.4-alpine3.6
 
-ENV LANG C.UTF-8
-ENV APP_HOME /janna
+WORKDIR /janna
 
-ARG PACKAGES=' \
+ARG BUILD_DEPS=' \
     ruby-dev \
     build-base \
-    curl \
     libxml2-dev \
     libxslt-dev \
     libffi-dev'
 
-RUN apk add --no-cache --update $PACKAGES && \
+ARG RUNTIME_DEPS=' \
+    curl'
+
+ENV LANG C.UTF-8
+
+RUN apk add --no-cache $RUNTIME_DEPS
+
+COPY Gemfile.lock .
+COPY Gemfile .
+
+RUN apk add --no-cache --virtual .build-deps $BUILD_DEPS && \
+    bundle install --jobs=4 --retry=4 && \
+    apk del .build-deps && \
     rm -rf /var/cache/apk/*
 
-WORKDIR $APP_HOME
-COPY Gemfile $APP_HOME
-COPY Gemfile.lock $APP_HOME
-RUN bundle install --jobs=4 --retry=4
-
-COPY . $APP_HOME
+COPY . .
 
 ENTRYPOINT ["bundle", "exec"]
 CMD ["shotgun", "--server", "puma", "--host", "0.0.0.0", "--port", "4567"]
