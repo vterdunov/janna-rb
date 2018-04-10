@@ -21,12 +21,17 @@ class VmsController < ApplicationController
   # @return [json]
   post '/v1/vm' do
     content_type :json
-    job_id = rest_router.perform_async(vm_params)
-    $slacker.notify("Start deploy VM: `#{vm_params[:vmname]}`",
+    begin
+      job_id = rest_router.perform_async(vm_params)
+      $slacker.notify("Start deploy VM: `#{vm_params[:vmname]}`",
                     to: vm_params[:message_to],
                     footer: "JID: #{job_id}")
-    status 202
-    { ok: true, job_id: job_id }.to_json
+      status 202
+      { ok: true, job_id: job_id }.to_json
+    rescue Exception => e
+      status 200
+      { ok: false, error: "Could not perform job: #{e.inspect}" }.to_json
+    end
   end
 
   # VM power management
@@ -54,9 +59,14 @@ class VmsController < ApplicationController
   # @return [json] 202 Accepted. Destroy VM in progress.
   delete '/v1/vm' do
     content_type :json
-    job_id = rest_router.perform_async(vm_params)
-    status 202
-    { ok: true, job_id: job_id }.to_json
+    begin
+      job_id = rest_router.perform_async(vm_params)
+      status 202
+      { ok: true, job_id: job_id }.to_json
+    rescue Exception => e
+      status 200
+      { ok: false, error: "Could not delete VM: #{e.inspect}" }.to_json
+    end
   end
 
   # Get Information about Virtual machine

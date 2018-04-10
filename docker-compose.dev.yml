@@ -10,36 +10,34 @@ services:
     logging:
       driver: none
 
-  api:
+  janna: &janna
     build: .
+    # image: vterdunov/janna:0.4.0
     env_file: .env.local
-    volumes:
-      - '.:/janna'
-    ports:
-      - '4567:4567'
     environment:
       RACK_ENV: development
-    depends_on:
-      - 'redis'
     # dns:
     #   - 10.0.0.10
     #   - 8.8.8.8
 
+  api:
+    <<: *janna
+    volumes:
+      - '.:/janna'
+    ports:
+      - '4567:4567'
+    depends_on:
+      - 'redis'
+
   worker:
-    build: .
+    <<: *janna
     command: bundle exec sidekiq -r ./config/environment.rb
-    env_file: .env.local
     volumes:
       - '.:/janna'
       - 'data:/data'
-    environment:
-      RACK_ENV: development
     depends_on:
       - 'redis'
       - 'api'
-    # dns:
-    #   - 10.0.0.10
-    #   - 8.8.8.8
 
 volumes:
   data:
