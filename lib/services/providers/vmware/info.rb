@@ -26,7 +26,7 @@ class VMwareVMInfo
     res
   rescue RuntimeError => e
     $logger.error { e.message }
-    $logger.error { e.backtrace.inspect }
+    $logger.error { e.backtrace.join("\n\t") }
     res[:ok] = false
     res[:error] = e.message
     res

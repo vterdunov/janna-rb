@@ -43,7 +43,7 @@ class VMware
   def destroy_vm
     $logger.info { 'Start destroy VM from VMware' }
     dc = datacenter
-    vm = getting_vm(dc, vm_name) || raise("ERROR: VM `#{vm_name}` not found.")
+    vm = getting_vm(dc, vm_name) || raise("ERROR: Could not destroy. VM `#{vm_name}` not found.")
     begin
       vm.PowerOffVM_Task.wait_for_completion
     rescue RbVmomi::Fault
@@ -66,7 +66,7 @@ class VMware
     $logger.info "Powering On VM: #{vm_name}"
     vm.PowerOnVM_Task.wait_for_completion
 
-    until (ip = vm.guest_ip)
+    until (ip = vm.guest_ip) && !ip.include?(':')
       sleep 5
       $logger.info "#{vm_name}: waiting for VM to be up..."
     end
@@ -164,6 +164,7 @@ class VMware
                  datastore: nil,
                  network_mappings: nil,
                  property_mappings: nil)
+
     vim.serviceContent.ovfManager.deployOVF(
       uri: ovf_path,
       vmName: vm_name,
@@ -176,7 +177,7 @@ class VMware
     )
   rescue RbVmomi::Fault => e
     $logger.error { e.message }
-    $logger.error { e.backtrace.inspect }
+    $logger.error { e.backtrace.join("\n\t") }
     raise "ERROR: #{e.message}"
   end
 end

@@ -10,6 +10,8 @@ require 'tmpdir'
 #   # Start download file
 #   file.download
 class Downloader
+  attr_reader :url
+
   def initialize(url)
     @url = url
   end
@@ -17,20 +19,20 @@ class Downloader
   # Starts download file
   # @return [String] Path to downloaded file
   def download
-    uri = URI @url
-    f_name = filename @url
-    t_dir = mk_tmp_dir
+    uri = URI(url)
+    f_name = filename(url)
+    t_dir = mk_tmp_dir()
     ova_path = "#{t_dir}/#{f_name}"
-    $logger.debug { "Start download file, name=#{f_name}, url=#{@url}" }
+    $logger.debug { "Start download file, name=#{f_name}, url=#{url}" }
     raise FileNotFoundException, 'ERROR Temporary directory doesn\'t exist' unless File.exist? t_dir
-    download_file uri, ova_path
+    download_file(uri, ova_path)
     raise FileNotFoundException, 'File not downloaded!' unless File.exist? ova_path
     $logger.debug { "File downloaded, path=#{ova_path}" }
 
     ova_path
   rescue StandardError => e
     $logger.error { e.message }
-    $logger.error { e.backtrace.inspect }
+    $logger.error { e.backtrace.join("\n\t") }
     raise 'ERROR: Failed download file.'
   end
 

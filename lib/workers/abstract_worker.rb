@@ -30,7 +30,7 @@ class AbstractWorker
 
   def catching(error)
     $logger.error { error.message }
-    $logger.error { error.backtrace.inspect }
-    $slacker.notify(error.message, level: 'error', to: args[:message_to])
+    $logger.error { error.backtrace.join("\n\t") }
+    $slacker.notify("ERROR: #{error.message}", level: 'error', to: args[:message_to])
   end
 end
