@@ -22,16 +22,17 @@ class JobsStatus
     jobs
   rescue RuntimeError => e
     $logger.error { e.message }
-    $logger.error { e.backtrace.inspect }
+    $logger.error { e.backtrace.join("\n\t") }
     jobs[:ok] = false
     jobs[:error] = e.message
     jobs
   end
 
   # @param [String] Job ID
-  # @return [Hash]  Job status and stage by ID.
+  # @return [Hash]  Job info by ID.
   def job_status(job_id)
     job = {}
+
     # :queued, :working, :complete, :failed or :interrupted, nil after expiry
     status = Sidekiq::Status.status(job_id)
     job[:status] = if status.nil?
@@ -40,12 +41,16 @@ class JobsStatus
                      status
                    end
     stage = Sidekiq::Status.get(job_id, :stage)
-    job[:stage] = stage
+    job[:stage] = stage unless stage.blank?
+
+    ip = Sidekiq::Status.get(job_id, :ip)
+    job[:ip] = ip unless ip.blank?
+
     job[:ok] = true
     job
   rescue RuntimeError => e
     $logger.error { e.message }
-    $logger.error { e.backtrace.inspect }
+    $logger.error { e.backtrace.join("\n\t") }
     job[:ok] = false
     job[:error] = e.message
     job
