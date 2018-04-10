@@ -5,7 +5,7 @@ build:
 	docker build -t janna .
 
 start:
-	docker-compose -f docker-compose.dev.yml up --build
+	docker-compose -f docker-compose.dev.yml up --build api worker redis
 
 shell:
 	docker-compose -f docker-compose.dev.yml exec $(filter-out $@,$(MAKECMDGOALS)) /bin/sh
