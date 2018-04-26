@@ -104,14 +104,30 @@ class VMware
     raise 'ERROR: No host in the cluster available to upload OVF to' unless host
 
     $logger.debug { 'Get networks' }
-    network = computer.network.find { |x| x.name == opts[:network] }
+
+    # puts '+'*30
+    # puts network.name
+    # puts '+'*30
 
     ovf = open(ovf_path, 'r') { |io| Nokogiri::XML(io.read) }
     ovf.remove_namespaces!
-    networks = ovf.xpath('//NetworkSection/Network').map { |x| x['name'] }
-    network_mappings = Hash[networks.map { |x| [x, network] }]
 
-    network_mappings_str = network_mappings.map { |k, v| "#{k} = #{v.name}" }
+    networks = {}
+    # Selcet networks from OVF
+    ovf_networks = ovf.xpath('//NetworkSection/Network').map { |x| x['name'] }
+    ovf_networks.each { |n| networks[n] = n } unless ovf_networks.blank?
+
+    # Selcet networks from user request
+    custom_networks = Hash[[opts[:networks]]] unless opts[:networks].blank?
+    custom_networks.each_pair { |k,v| networks[k] = v } unless custom_networks.blank?
+
+    network_mappings = {}
+    networks.each_pair do |src, dst|
+      n = computer.network.find { |x| x.name == dst }
+      network_mappings[src] = n
+    end
+
+    network_mappings_str = network_mappings.map { |k, v| "#{k} => #{v.name}" }
     $logger.info { "Network: #{network_mappings_str.join(', ')}" }
 
     property_mappings = {}
