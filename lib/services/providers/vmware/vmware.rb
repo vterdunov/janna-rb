@@ -120,7 +120,7 @@ class VMware
       network_mappings = Hash[ovf_networks.map { |x| [x, network] }]
     else
       # Mapping networks from user request
-      custom_networks = Hash[[opts[:networks]]] unless opts[:networks].blank?
+      custom_networks = Hash[*opts[:networks]] unless opts[:networks].blank?
       custom_networks.each_pair { |k,v| networks[k] = v } unless custom_networks.blank?
 
       $logger.debug { "custom_networks=#{custom_networks}" }
