@@ -111,7 +111,7 @@ class VMware
     # Selcet networks from OVF
     ovf_networks = ovf.xpath('//NetworkSection/Network').map { |x| x['name'] }
     ovf_networks.each { |n| networks[n] = n } unless ovf_networks.blank?
-    $logger.debug { "ovf_networks=#{ovf_networks}" }
+    $logger.debug { "OVF networks=#{networks}" }
 
     network_mappings = {}
     if opts[:networks].blank?
@@ -123,16 +123,14 @@ class VMware
       custom_networks = Hash[*opts[:networks]] unless opts[:networks].blank?
       custom_networks.each_pair { |k,v| networks[k] = v } unless custom_networks.blank?
 
-      $logger.debug { "custom_networks=#{custom_networks}" }
+      $logger.debug { "Custom networks=#{custom_networks}" }
 
       networks.each_pair do |src, dst|
-        n = computer.network.find { |x| x.name == dst }
+        $logger.info { "Network mapping: #{src} => #{dst}" }
+        n = computer.network.find { |x| x.name == dst unless x.nil? }
         network_mappings[src] = n
       end
     end
-
-    network_mappings_str = network_mappings.map { |k, v| "#{k} => #{v.name}" }
-    $logger.info { "Network mapping: #{network_mappings_str.join(', ')}" }
 
     property_mappings = {}
 
