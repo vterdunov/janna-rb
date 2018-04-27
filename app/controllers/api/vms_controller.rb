@@ -6,6 +6,7 @@ class VmsController < ApplicationController
   # @option opts [String] :vmname        +Required+ Virtual Machine name
   # @option opts [String] :ova_url       +Required+ URL to OVA file
   # @option opts [String] :network       +Optional+ Network name
+  # @option opts [String] :networks      +Optional+ Mapping between OVF network and ESXi system network
   # @option opts [String] :datacenter    +Optional+ Datacenter name
   # @option opts [String] :datastores    +Optional+ Datastores names. Comma separated string. E.g.: datastore1, datastore2, datastore3
   # @option opts [String] :cluster       +Optional+ Cluster name

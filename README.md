@@ -47,9 +47,10 @@ See [.env](https://github.com/vterdunov/janna/blob/master/.env.example) file.
 | vmname | Virtual Machine name |
 | template_name | Name of Template |
 | template_path | Path to Templates folder |
-| network | (*Optional) Network name |
+| network | (*Optional) Map the network to all OVF networks |
+| networks | (*Optional) Comma separated string of custom network mapping between OVF network and ESXi system network ('OVF-VM-Network-Name' --> 'Yours-ESXi-VM-Network-Name'). Overrides `network` parameter. E.g.: `OVF-VM-Network-Name,Yours-ESXi-VM-Network-Name` |
 | datacenter | (*Optional) Datacenter name |
-| datastores | (*Optional) Datastores names. Comma separated string. E.g.: datastore1, datastore2, datastore3 |
+| datastores | (*Optional) Datastores names. Comma separated string. E.g.: `datastore1, datastore2, datastore3` |
 | cluster | (*Optional) Cluster name |
 | vm_folder | (*Optional) Folder name where VM will be created |
 | message_to | (*Optional) Name or Channel to send messages |

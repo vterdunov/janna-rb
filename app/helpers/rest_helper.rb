@@ -25,6 +25,8 @@ module RestHelper
     end
     res_params = $default_vm_params.merge(custom)
     res_params[:datastores] = string_to_list(res_params[:datastores])
+    res_params[:networks] = string_to_list(res_params[:networks]) unless res_params[:networks].blank?
+
     res_params
   end
 
