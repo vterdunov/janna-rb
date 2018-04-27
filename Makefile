@@ -29,3 +29,6 @@ doc-api:
 doc:
 	@docker-compose -f docker-compose.dev.yml exec api rm -rf doc/janna
 	@docker-compose -f docker-compose.dev.yml exec api yard doc -o doc/jana
+
+clean:
+	docker-compose -f docker-compose.dev.yml down --volumes

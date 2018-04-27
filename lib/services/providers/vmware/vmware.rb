@@ -107,11 +107,8 @@ class VMware
       end
     end
 
-    # puts '++'*80
-    # puts host
-    # raise 'Test'
-
     raise 'ERROR: No host in the cluster available to upload OVF to' unless host
+    $logger.info { "Host: #{host.name}" }
 
     $logger.info { 'Mapping networks' }
     ovf = open(ovf_path, 'r') { |io| Nokogiri::XML(io.read) }
