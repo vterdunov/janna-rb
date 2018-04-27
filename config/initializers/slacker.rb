@@ -26,6 +26,9 @@ class Slacker
   def notify(text, to: nil, level: 'info', footer: nil)
     attachment = { text: text, color: COLOR[level], footer: footer, mrkdwn_in: ['text'] }
     sender(to).post(attachments: [attachment])
+  rescue Slack::Notifier::APIError => e
+    $logger.error { e.message }
+    $logger.error { e.backtrace.join("\n\t") }
   end
 
   private
