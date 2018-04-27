@@ -12,6 +12,13 @@ class AbstractWorker
     do_work(vim(args), datacenter(args), args)
   rescue RuntimeError => e
     catching(e)
+  rescue Exception => e
+    $logger.error { e.message }
+    $logger.error { e.backtrace.join("\n\t") }
+    $slacker.notify("ERROR: Something went wrong.",
+      level: 'error',
+      to: args[:message_to],
+      footer: "VM: #{args[:vmname]}")
   end
 
   def vim(args)
@@ -31,6 +38,9 @@ class AbstractWorker
   def catching(error)
     $logger.error { error.message }
     $logger.error { error.backtrace.join("\n\t") }
-    $slacker.notify("ERROR: #{error.message}", level: 'error', to: args[:message_to])
+    $slacker.notify("ERROR: #{error.message}",
+      level: 'error',
+      to: args[:message_to],
+      footer: "VM: #{args[:vmname]}")
   end
 end
