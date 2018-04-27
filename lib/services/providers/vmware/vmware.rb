@@ -94,12 +94,22 @@ class VMware
       'datastore', 'runtime.connectionState',
       'runtime.inMaintenanceMode', 'name'
     )
-    host = hosts.shuffle.find do |x|
-      host_props = hosts_props[x]
-      is_connected = host_props['runtime.connectionState'] == 'connected'
-      is_ds_accessible = host_props['datastore'].member?(datastore)
-      is_connected && is_ds_accessible && !host_props['runtime.inMaintenanceMode']
+
+    # TODO: rework
+    if opts[:computer]
+      host = hosts.shuffle.find { |c| c.name == opts[:computer] }
+    else
+      host = hosts.shuffle.find do |x|
+        host_props = hosts_props[x]
+        is_connected = host_props['runtime.connectionState'] == 'connected'
+        is_ds_accessible = host_props['datastore'].member?(datastore)
+        is_connected && is_ds_accessible && !host_props['runtime.inMaintenanceMode']
+      end
     end
+
+    # puts '++'*80
+    # puts host
+    # raise 'Test'
 
     raise 'ERROR: No host in the cluster available to upload OVF to' unless host
 
@@ -156,6 +166,7 @@ class VMware
 
   def create_scheduler(vim, dc, vm_folder)
     $logger.debug { 'Create scheduler' }
+
     AdmissionControlledResourceScheduler.new(
       vim,
       datacenter: dc,

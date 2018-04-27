@@ -32,7 +32,8 @@ See [.env](https://github.com/vterdunov/janna/blob/master/.env.example) file.
 | network | (*Optional) Network name |
 | datacenter | (*Optional) Datacenter name |
 | datastores | (*Optional) Datastores names. Comma separated string. E.g.: datastore1, datastore2, datastore3 |
-| cluster | (*Optional) Cluster name |
+| computer_path | (*Optional) Cluster name to deploy VM |
+| computer | (*Optional) Host from the Cluster to deploy VM |
 | vm_folder | (*Optional) Folder name where VM will be created |
 | message_to | (*Optional) Name or Channel to send messages |
 | **DELETE /v1/vm** | **Delete VM** |
