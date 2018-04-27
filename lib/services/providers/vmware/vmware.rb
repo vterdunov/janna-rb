@@ -87,7 +87,7 @@ class VMware
     resource_pool = computer.resourcePool
 
     pc = vim.serviceContent.propertyCollector
-    $logger.debug { 'Choose computer from cluster' }
+    $logger.info { 'Choose computer from cluster' }
     hosts = computer.host
     hosts_props = pc.collectMultiple(
       hosts,
@@ -103,12 +103,7 @@ class VMware
 
     raise 'ERROR: No host in the cluster available to upload OVF to' unless host
 
-    $logger.debug { 'Get networks' }
-
-    # puts '+'*30
-    # puts network.name
-    # puts '+'*30
-
+    $logger.info { 'Mapping networks' }
     ovf = open(ovf_path, 'r') { |io| Nokogiri::XML(io.read) }
     ovf.remove_namespaces!
 
@@ -116,19 +111,28 @@ class VMware
     # Selcet networks from OVF
     ovf_networks = ovf.xpath('//NetworkSection/Network').map { |x| x['name'] }
     ovf_networks.each { |n| networks[n] = n } unless ovf_networks.blank?
-
-    # Selcet networks from user request
-    custom_networks = Hash[[opts[:networks]]] unless opts[:networks].blank?
-    custom_networks.each_pair { |k,v| networks[k] = v } unless custom_networks.blank?
+    $logger.debug { "ovf_networks=#{ovf_networks}" }
 
     network_mappings = {}
-    networks.each_pair do |src, dst|
-      n = computer.network.find { |x| x.name == dst }
-      network_mappings[src] = n
+    if opts[:networks].blank?
+      # Override ALL nwtworks to default network
+      network = computer.network.find { |x| x.name == opts[:network] }
+      network_mappings = Hash[ovf_networks.map { |x| [x, network] }]
+    else
+      # Mapping networks from user request
+      custom_networks = Hash[[opts[:networks]]] unless opts[:networks].blank?
+      custom_networks.each_pair { |k,v| networks[k] = v } unless custom_networks.blank?
+
+      $logger.debug { "custom_networks=#{custom_networks}" }
+
+      networks.each_pair do |src, dst|
+        n = computer.network.find { |x| x.name == dst }
+        network_mappings[src] = n
+      end
     end
 
     network_mappings_str = network_mappings.map { |k, v| "#{k} => #{v.name}" }
-    $logger.info { "Network: #{network_mappings_str.join(', ')}" }
+    $logger.info { "Network mapping: #{network_mappings_str.join(', ')}" }
 
     property_mappings = {}
 
