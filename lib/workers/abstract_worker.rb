@@ -12,13 +12,8 @@ class AbstractWorker
     do_work(vim(args), datacenter(args), args)
   rescue RuntimeError => e
     catching(e)
-  rescue Exception => e
-    $logger.error { e.message }
-    $logger.error { e.backtrace.join("\n\t") }
-    $slacker.notify("ERROR: Something went wrong.",
-      level: 'error',
-      to: args[:message_to],
-      footer: "VM: #{args[:vmname]}")
+  rescue StandardError => e
+    catching(e, 'Something went wrong')
   end
 
   def vim(args)
@@ -35,10 +30,12 @@ class AbstractWorker
     raise('Not implemented')
   end
 
-  def catching(error)
+  def catching(error, msg='')
+    store stage: 'canceled'
     $logger.error { error.message }
     $logger.error { error.backtrace.join("\n\t") }
-    $slacker.notify("ERROR: #{error.message}",
+    message = msg.empty? ? error.message : msg
+    $slacker.notify("Deploy error: #{message}",
       level: 'error',
       to: args[:message_to],
       footer: "VM: #{args[:vmname]}")

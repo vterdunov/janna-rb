@@ -17,7 +17,7 @@ class VMwareDeployOVA < AbstractWorker
     ova_path = Downloader.new(params[:ova_url]).download
     unpacked_dir = Unpacker.new().untar(ova_path)
     params[:ovf_path] = Dir["#{unpacked_dir}/**/*.ovf"].first
-    raise "ERROR: Cannot get OVF file for `#{params[:vmname]}`" unless params[:ovf_path]
+    raise "Cannot get OVF file for `#{params[:vmname]}`" unless params[:ovf_path]
 
     store stage: 'creating vm'
     # TODO: Get ovf_path from 'create_vm' arguments, not from params
