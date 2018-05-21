@@ -33,6 +33,6 @@ class VMwareDeployOVA < AbstractWorker
                     level: 'good')
   ensure
     FileUtils.remove_dir(unpacked_dir) unless unpacked_dir.blank?
-    FileUtils.remove_dir(File.dirname(ova_path)) unless ova_path.blank?
+    FileUtils.rm_f(ova_path) unless ova_path.blank?
   end
 end
