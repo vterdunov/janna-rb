@@ -15,6 +15,7 @@ gem 'bcrypt'
 gem 'slack-notifier'
 gem 'tux'
 gem 'puma'
+gem 'down'
 
 group :test do
   gem 'rspec'
