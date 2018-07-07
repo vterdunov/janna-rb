@@ -28,7 +28,6 @@ class Slacker
     sender(to).post(attachments: [attachment])
   rescue Slack::Notifier::APIError => e
     $logger.error { e.message }
-    $logger.error { e.backtrace.join("\n\t") }
   end
 
   private
