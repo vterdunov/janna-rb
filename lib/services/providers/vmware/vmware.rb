@@ -6,6 +6,7 @@ require_relative '../rbvmomi_wrapper'
 
 class VMware
   attr_reader :ovf_path, :vm_name, :template_name, :opts, :vim, :datacenter
+  attr_accessor :scheduler
   # TODO: Researh about the constant.
   VIM = RbVmomi::VIM
 
@@ -21,9 +22,35 @@ class VMware
   def deploy_from_template
     dc = datacenter
     vm_folder = get_vm_folder(dc)
-    scheduler = create_scheduler(vim, dc, vm_folder)
+    scheduler_opts = {
+      vim: vim,
+      dc: dc,
+      vm_folder: vm_folder,
+      computer_names: [opts[:computer_path]],
+      datastore_paths: opts[:datastores],
+    }
+    scheduler = create_scheduler(scheduler_opts)
 
-    scheduler.make_placement_decision
+    # make_placement_decision call 'datacenter' method with can rase a RuntimeError. I need a recognize with type of errors was raised.
+    # see: https://github.com/vmware/rbvmomi/blob/2e427817735e5df0aef1baa07bc95762e45a18bc/lib/rbvmomi/utils/admission_control.rb#L124
+    begin
+      scheduler.make_placement_decision
+    rescue RuntimeError => e
+      $logger.error { e.message }
+      # Datastore not found
+      ds_not_found = e.message.include?('datastore') && e.message.include?('not found')
+      if ds_not_found
+        raise e.message if opts[:datastores].size <= 1
+        $logger.warn { 'Datastore not found. Retrying with new datastores.' }
+        # grab ds from error
+        bad_ds =  e.message.split(' ')[-3]
+        opts[:datastores] = opts[:datastores] - [bad_ds]
+        scheduler_opts[:datastore_paths] = opts[:datastores]
+        scheduler = create_scheduler(scheduler_opts)
+        retry
+      end
+    end
+
     datastore       = scheduler.datastore
     computer        = scheduler.pick_computer
     network         = computer.network.find { |x| x.name == opts[:network] }
@@ -66,7 +93,7 @@ class VMware
     $logger.info "Powering On VM: #{vm_name}"
     vm.PowerOnVM_Task.wait_for_completion
 
-    until (ip = vm.guest_ip) && !ip.include?(':')
+    until (ip = vm.guest_ip) && !ip.include?(':') # Sometimes VMWare returns "internal" IPv6 address. Fix it.
       sleep 5
       $logger.info "#{vm_name}: waiting for VM to be up..."
     end
@@ -79,9 +106,35 @@ class VMware
   def create_vm
     dc        = datacenter
     vm_folder = get_vm_folder(dc)
-    scheduler = create_scheduler(vim, dc, vm_folder)
+    scheduler_opts = {
+      vim: vim,
+      dc: dc,
+      vm_folder: vm_folder,
+      computer_names: [opts[:computer_path]],
+      datastore_paths: opts[:datastores],
+    }
+    scheduler = create_scheduler(scheduler_opts)
 
-    scheduler.make_placement_decision
+    # make_placement_decision call 'datacenter' method with can rase a RuntimeError. I need a recognize with type of errors was raised.
+    # see: https://github.com/vmware/rbvmomi/blob/2e427817735e5df0aef1baa07bc95762e45a18bc/lib/rbvmomi/utils/admission_control.rb#L124
+    begin
+      scheduler.make_placement_decision
+    rescue RuntimeError => e
+      $logger.error { e.message }
+      # Datastore not found
+      ds_not_found = e.message.include?('datastore') && e.message.include?('not found')
+      if ds_not_found
+        raise e.message if opts[:datastores].size <= 1
+        $logger.warn { 'Datastore not found. Retrying with new datastores.' }
+        # grab ds from error
+        bad_ds =  e.message.split(' ')[-3]
+        opts[:datastores] = opts[:datastores] - [bad_ds]
+        scheduler_opts[:datastore_paths] = opts[:datastores]
+        scheduler = create_scheduler(scheduler_opts)
+        retry
+      end
+    end
+
     datastore     = scheduler.datastore
     computer      = scheduler.pick_computer
     resource_pool = computer.resourcePool
@@ -161,16 +214,16 @@ class VMware
     dc.vmFolder.traverse(opts[:vm_folder], VIM::Folder)
   end
 
-  def create_scheduler(vim, dc, vm_folder)
+  def create_scheduler(opts)
     $logger.debug { 'Create scheduler' }
 
     AdmissionControlledResourceScheduler.new(
-      vim,
-      datacenter: dc,
-      computer_names: [opts[:computer_path]],
-      vm_folder: vm_folder,
+      opts[:vim],
+      datacenter: opts[:dc],
+      computer_names: opts[:computer_names],
+      vm_folder: opts[:vm_folder],
       rp_path: '/',
-      datastore_paths: opts[:datastores],
+      datastore_paths: opts[:datastore_paths],
       max_vms_per_pod: nil, # No limits
       min_ds_free: nil, # No limits
     )

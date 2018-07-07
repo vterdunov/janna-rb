@@ -24,8 +24,8 @@ class VmsController < ApplicationController
   post '/v1/vm' do
     content_type :json
     begin
-      $logger.debug { "Incoming request, params=#{params},
-        method=#{request.request_method.downcase},
+      $logger.debug { "Incoming request, params=#{params}, \
+        method=#{request.request_method.downcase}, \
         path=#{request.path_info.downcase}" }
 
       job_id = rest_router.perform_async(vm_params)
@@ -51,8 +51,8 @@ class VmsController < ApplicationController
   #
   # @return [json]
   put '/v1/vm' do
-    $logger.debug { "Incoming request, params=#{params},
-      method=#{request.request_method.downcase},
+    $logger.debug { "Incoming request, params=#{params}, \
+      method=#{request.request_method.downcase}, \
       path=#{request.path_info.downcase}" }
 
     content_type :json
@@ -68,8 +68,8 @@ class VmsController < ApplicationController
   #
   # @return [json] 202 Accepted. Destroy VM in progress.
   delete '/v1/vm' do
-    $logger.debug { "Incoming request, params=#{params},
-      method=#{request.request_method.downcase},
+    $logger.debug { "Incoming request, params=#{params}, \
+      method=#{request.request_method.downcase}, \
       path=#{request.path_info.downcase}" }
 
     content_type :json
@@ -92,8 +92,8 @@ class VmsController < ApplicationController
   #
   # @return [json] VM information about network and power state.
   get '/v1/vm' do
-    $logger.debug { "Incoming request, params=#{params},
-      method=#{request.request_method.downcase},
+    $logger.debug { "Incoming request, params=#{params}, \
+      method=#{request.request_method.downcase}, \
       path=#{request.path_info.downcase}" }
 
     content_type :json
