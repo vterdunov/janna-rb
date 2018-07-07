@@ -32,6 +32,8 @@ class AbstractWorker
 
   def catching(error, msg='')
     store stage: 'canceled'
+    store error: error.message
+    store ok: false
     $logger.error { error.message }
     $logger.error { error.backtrace.join("\n\t") }
     message = msg.empty? ? error.message : msg

@@ -46,6 +46,13 @@ class JobsStatus
     ip = Sidekiq::Status.get(job_id, :ip)
     job[:ip] = ip unless ip.blank?
 
+    error = Sidekiq::Status.get(job_id, :error)
+    if !error.blank?
+      job[:error] = error
+      job[:ok] = false
+      return job
+    end
+
     job[:ok] = true
     job
   rescue RuntimeError => e
