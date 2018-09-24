@@ -1,3 +1,5 @@
+# DEPRECATED This is no longer supported, please consider using [janna-api](https://github.com/vterdunov/janna-api) instead
+---
 # Janna
 
 Janna provides an HTTP interface to some VMware functions.  
